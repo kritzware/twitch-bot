@@ -3,7 +3,11 @@ const expect = require('chai').expect
 
 const TwitchBot = require('../index')
 
-
+const CONFIG = {
+  USERNAME: process.env.TWITCHBOT_USERNAME,
+  OAUTH: process.env.TWITCHBOT_OAUTH,
+  CHANNEL: process.env.TWITCHBOT_CHANNEL
+}
 
 describe('TwitchBot()', () => {
   it('should create a new Bot instance', () => {
