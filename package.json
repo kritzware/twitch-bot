@@ -1,0 +1,15 @@
+{
+  "name": "twitch-bot",
+  "version": "1.0.0",
+  "description": "Easily create chat bots for Twitch.tv",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.1.0",
+    "mocha": "^3.4.2"
+  }
+}
