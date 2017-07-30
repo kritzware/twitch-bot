@@ -1,2 +1,28 @@
 # twitch-bot [![CircleCI](https://circleci.com/gh/kritzware/twitch-bot.svg?style=svg&circle-token=3d338af28058e84dde13bee88751a50f55aefab3)](https://circleci.com/gh/kritzware/twitch-bot)
 Easily create chat bots for Twitch.tv
+
+## Install
+Install via NPM
+```
+$ npm install twitch-bot
+```
+
+## Example
+```javascript
+const TwitchBot = require('twitch-bot')
+
+const Bot = new TwitchBot({
+  username: 'Kappa_Bot'
+  oauth: 'oauth:dwiaj91j1KKona9j9d1420',
+  channel: 'twitch'
+})
+
+Bot.on('join', () => {
+
+    Bot.on('message', chatter => {
+      if(chatter.message === '!test') {
+        Bot.say('Command executed! PogChamp')
+      }
+    })
+})
+```
