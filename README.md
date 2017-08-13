@@ -87,3 +87,18 @@ Bot.on('error', err => ... )
   message: 'Some error happened in the IRC channel'
 }
 ```
+
+## Methods
+### `say(message: String, err: Callback)`
+Send a message in the currently connected Twitch channel. An optional callback is provided for validating if the message was sent correctly.
+
+#### Example
+```javascript
+Bot.say('This is a message')
+
+Bot.say('Pretend this message is over 500 characters', err => {
+  sent: false,
+  message: 'Exceeded PRIVMSG character limit (500)'
+  ts: '2017-08-13T16:38:54.989Z'
+})
+```
