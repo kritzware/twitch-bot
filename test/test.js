@@ -47,5 +47,12 @@ describe('TwitchBot()', () => {
     })
     bot.on('join', () => done())
   })
-
+  it('should emit an error when twitch authentication fails', done => {
+    const bot = new TwitchBot({
+      username: 'kappa_123',
+      oauth: 'oauth:123kappa',
+      channel: CONFIG.CHANNEL
+    })
+    bot.on('error', err => done())
+  })
 })
