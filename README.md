@@ -63,3 +63,27 @@ Bot.on('message', chatter => ... )
   message: 'This is a message PogChamp',
   username: 'Kritzware' }
   ```
+
+### `error - (err: Object)`
+Emitted when any errors occurs in the Twitch IRC channel, or when attempting to connect to a channel.
+
+#### Error types
+##### `Login authentication failed`
+This error occurs when either your twitch username or oauth are incorrect/invalid.
+
+Response:
+```javscript
+{ message: 'Login authentication failed' }
+```
+
+#### Usage
+```javascript
+Bot.on('error', err => ... )
+```
+
+#### Example Response
+```javascript
+{
+  message: 'Some error happened in the IRC channel'
+}
+```
