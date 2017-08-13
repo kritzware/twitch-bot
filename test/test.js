@@ -2,6 +2,7 @@ const assert = require('assert')
 const expect = require('chai').expect
 
 const TwitchBot = require('../index')
+const samples = require('./samples')
 
 const CONFIG = {
   USERNAME: process.env.TWITCHBOT_USERNAME,
@@ -54,5 +55,43 @@ describe('TwitchBot()', () => {
       channel: CONFIG.CHANNEL
     })
     bot.on('error', err => done())
+  })
+})
+
+describe('say()', () => {
+  it('should send a message in the channel', done => {
+    const reciever = new TwitchBot({
+      username: CONFIG.USERNAME,
+      oauth: CONFIG.OAUTH,
+      channel: CONFIG.CHANNEL
+    })
+    const sender = new TwitchBot({
+      username: CONFIG.USERNAME,
+      oauth: CONFIG.OAUTH,
+      channel: CONFIG.CHANNEL
+    })
+    reciever.on('join', () => {
+      reciever.on('message', chatter => {
+        expect(chatter.message).to.equal('PogChamp')
+        done()
+      })
+    })
+    sender.on('join', () => {
+      sender.say('PogChamp')
+    })
+  })
+  it('should fail when the message to send is over 500 characters', done => {
+    const bot = new TwitchBot({
+      username: CONFIG.USERNAME,
+      oauth: CONFIG.OAUTH,
+      channel: CONFIG.CHANNEL
+    })
+    bot.on('join', () => {
+      bot.say(samples.PRIVMSG.long, err => {
+        expect(err.sent).to.equal(false)
+        expect(err.message).to.equal('Exceeded PRIVMSG character limit (500)')
+        done()
+      })
+    })
   })
 })
