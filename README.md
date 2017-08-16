@@ -31,6 +31,10 @@ Bot.on('error', err => {
 })
 ```
 
+## Index
+- [Events](https://github.com/kritzware/twitch-bot#events)
+- [Methods](https://github.com/kritzware/twitch-bot#methods)
+
 ## Events
 ### `join - ()`
 This event is emitted when a connection has been made to the the channel
