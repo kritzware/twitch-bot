@@ -80,6 +80,14 @@ Response:
 { message: 'Login authentication failed' }
 ```
 
+##### `Improperly formatted auth`
+This error occurs when your oauth password is not formatted correctly. The valid format should be `"oauth:your-oauth-password-123"`.
+
+Response:
+```javscript
+{ message: 'Improperly formatted auth' }
+```
+
 #### Usage
 ```javascript
 Bot.on('error', err => ... )
@@ -87,9 +95,7 @@ Bot.on('error', err => ... )
 
 #### Example Response
 ```javascript
-{
-  message: 'Some error happened in the IRC channel'
-}
+{ message: 'Some error happened in the IRC channel' }
 ```
 
 ## Methods

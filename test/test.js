@@ -10,13 +10,17 @@ const CONFIG = {
   CHANNEL: process.env.TWITCHBOT_CHANNEL
 }
 
+function createBotInstance({ username, oauth, channel }) {
+  return new TwitchBot({
+    username: username || CONFIG.USERNAME,
+    oauth: oauth || CONFIG.OAUTH,
+    channel: channel || CONFIG.CHANNEL
+  })
+}
+
 describe('TwitchBot()', () => {
   it('should create a new Bot instance', () => {
-    const bot = new TwitchBot({
-      username: CONFIG.USERNAME,
-      oauth: CONFIG.OAUTH,
-      channel: CONFIG.CHANNEL
-    })
+    const bot = createBotInstance({})
     expect(bot).to.be.an.instanceOf(TwitchBot)
   })
   it('should throw an error when missing required arguments', () => {
@@ -27,49 +31,35 @@ describe('TwitchBot()', () => {
     }
   })
   it('should normalize the channel name', () => {
-    const bot = new TwitchBot({
-      username: CONFIG.USERNAME,
-      oauth: CONFIG.OAUTH,
-      channel: 'Channel'
-    })
-    const bot2 = new TwitchBot({
-      username: CONFIG.USERNAME,
-      oauth: CONFIG.OAUTH,
-      channel: '#ChanneL'
-    })
+    const bot = createBotInstance({ channel: 'Channel' })
+    const bot2 = createBotInstance({ channel: '#ChanneL' })
     expect(bot.channel).to.equal('#channel')
     expect(bot2.channel).to.equal('#channel')
   })
   it('should emit a join event when connecting to twitch irc', done => {
-    const bot = new TwitchBot({
-      username: CONFIG.USERNAME,
-      oauth: CONFIG.OAUTH,
-      channel: CONFIG.CHANNEL
-    })
+    const bot = createBotInstance({})
     bot.on('join', () => done())
   })
   it('should emit an error when twitch authentication fails', done => {
-    const bot = new TwitchBot({
-      username: 'kappa_123',
-      oauth: 'oauth:123kappa',
-      channel: CONFIG.CHANNEL
+    const bot = createBotInstance({ username: 'kappa_123', oauth: 'oauth:123kappa' })
+    bot.on('error', err => {
+      expect(err.message).to.equal('Login authentication failed')
+      done()
     })
-    bot.on('error', err => done())
+  })
+  it('should emit an error when oauth format is invalid', done => {
+    const bot = createBotInstance({ oauth: 'oauthxD:kappa123' })
+    bot.on('error', err => {
+      expect(err.message).to.equal('Improperly formatted auth')
+      done()
+    })
   })
 })
 
 describe('say()', () => {
   it('should send a message in the channel', done => {
-    const reciever = new TwitchBot({
-      username: CONFIG.USERNAME,
-      oauth: CONFIG.OAUTH,
-      channel: CONFIG.CHANNEL
-    })
-    const sender = new TwitchBot({
-      username: CONFIG.USERNAME,
-      oauth: CONFIG.OAUTH,
-      channel: CONFIG.CHANNEL
-    })
+    const reciever = createBotInstance({})
+    const sender = createBotInstance({})
     reciever.on('join', () => {
       reciever.on('message', chatter => {
         expect(chatter.message).to.equal('PogChamp')
@@ -81,11 +71,7 @@ describe('say()', () => {
     })
   })
   it('should fail when the message to send is over 500 characters', done => {
-    const bot = new TwitchBot({
-      username: CONFIG.USERNAME,
-      oauth: CONFIG.OAUTH,
-      channel: CONFIG.CHANNEL
-    })
+    const bot = createBotInstance({})
     bot.on('join', () => {
       bot.say(samples.PRIVMSG.long, err => {
         expect(err.sent).to.equal(false)
