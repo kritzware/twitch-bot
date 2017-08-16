@@ -33,7 +33,13 @@ Bot.on('error', err => {
 
 ## Index
 - [Events](https://github.com/kritzware/twitch-bot#events)
+  - [`join`](https://github.com/kritzware/twitch-bot#join---)
+  - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
+  - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
+    - [`Login Authentication Failed`](https://github.com/kritzware/twitch-bot#login-authentication-failed)
+    - [`Improperly Formatted Auth`](https://github.com/kritzware/twitch-bot#improperly-formatted-auth)
 - [Methods](https://github.com/kritzware/twitch-bot#methods)
+  - [`say()`](https://github.com/kritzware/twitch-bot#saymessage-string-err-callback)
 
 ## Events
 ### `join - ()`
