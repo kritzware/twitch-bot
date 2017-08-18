@@ -81,3 +81,16 @@ describe('say()', () => {
     })
   })
 })
+
+describe('close()', () => {
+  it('should close the irc connection and emit a close event', done => {
+    const bot = createBotInstance({})
+    bot.on('join', () => {
+      bot.on('close', () => {
+        expect(bot.irc.destroyed).to.equal(true)
+        done()
+      })
+      bot.close()
+    })
+  })
+})

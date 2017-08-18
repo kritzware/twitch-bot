@@ -36,10 +36,10 @@ Bot.on('error', err => {
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
   - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
-    - [`Login Authentication Failed`](https://github.com/kritzware/twitch-bot#login-authentication-failed)
-    - [`Improperly Formatted Auth`](https://github.com/kritzware/twitch-bot#improperly-formatted-auth)
+  - [`close`](https://github.com/kritzware/twitch-bot#close---)
 - [Methods](https://github.com/kritzware/twitch-bot#methods)
   - [`say()`](https://github.com/kritzware/twitch-bot#saymessage-string-err-callback)
+  - [`close()`](https://github.com/kritzware/twitch-bot#close)
 
 ## Events
 ### `join - ()`
@@ -108,6 +108,15 @@ Bot.on('error', err => ... )
 { message: 'Some error happened in the IRC channel' }
 ```
 
+### `close - ()`
+This event is emitted when the irc connection is destroyed via the `Bot.close()` method.
+#### Usage
+```javascript
+Bot.on('close', () => {
+  console.log('closed bot irc connection')
+})
+```
+
 ## Methods
 ### `say(message: String, err: Callback)`
 Send a message in the currently connected Twitch channel. An optional callback is provided for validating if the message was sent correctly.
@@ -121,4 +130,12 @@ Bot.say('Pretend this message is over 500 characters', err => {
   message: 'Exceeded PRIVMSG character limit (500)'
   ts: '2017-08-13T16:38:54.989Z'
 })
+```
+
+### `close()`
+Closes the Twitch irc connection. Bot will be removed from the Twitch channel AND the irc server.
+
+#### Example
+```javascript
+Bot.close()
 ```
