@@ -35,14 +35,14 @@ Bot.on('error', err => {
 - [Events](https://github.com/kritzware/twitch-bot#events)
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
-  - [`timeout`]()
-  - [`ban`]()
+  - [`timeout`](https://github.com/kritzware/twitch-bot#timeout---event-object)
+  - [`ban`](https://github.com/kritzware/twitch-bot#timeout---event-object)
   - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
   - [`close`](https://github.com/kritzware/twitch-bot#close---)
 - [Methods](https://github.com/kritzware/twitch-bot#methods)
   - [`say()`](https://github.com/kritzware/twitch-bot#saymessage-string-err-callback)
-  - [`timeout()`]()
-  - [`ban()`]()
+  - [`timeout()`](https://github.com/kritzware/twitch-bot#timeoutusername-string-duration-int-reason-string)
+  - [`ban()`](https://github.com/kritzware/twitch-bot#banusername-string-reason-string)
   - [`close()`](https://github.com/kritzware/twitch-bot#close)
 
 ## Events
@@ -108,7 +108,7 @@ Bot.on('timeout', event => ... )
 ```
 
 ### `ban - (event: Object)`
-Emitted when a user is Permanently banned from the chat. The `ban_reason` attribute is `null` when no reason message is used.
+Emitted when a user is permanently banned from the chat. The `ban_reason` attribute is `null` when no reason message is used.
 
 #### Usage
 ```javascript
@@ -186,7 +186,7 @@ Bot.say('Pretend this message is over 500 characters', err => {
 ```
 
 ### `timeout(username: String, duration: int, reason: String)`
-Timeout a user from the chat. Default `duration` is 600 seconds and an optional `reason` message.
+Timeout a user from the chat. Default `duration` is 600 seconds. Optional `reason` message.
 
 #### Example
 ```javascript
