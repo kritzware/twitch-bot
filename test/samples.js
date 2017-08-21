@@ -21,6 +21,30 @@ module.exports = {
       username: 'L1nk3n_'
     },
     long: 'PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp' 
+  },
+
+  CLEARCHAT: {
+    timeout_raw: `@ban-duration=10;ban-reason=This\\sis\\sthe\\sreason\\smessage\\sKappa;room-id=44667418;target-user-id=37798112;tmi-sent-ts=1503346029068 :tmi.twitch.tv CLEARCHAT #kritzware :blarev`,
+    timeout_expected: {
+      ban_duration: 10,
+      ban_reason: 'This is the reason message Kappa',
+      room_id: 44667418,
+      target_user_id: 37798112,
+      tmi_sent_ts: 1503346029068,
+      type: 'timeout',
+      channel: '#kritzware',
+      target_username: 'blarev'
+    },
+    ban_raw: `@ban-reason=This\\sis\\sthe\\sreason\\smessage;room-id=44667418;target-user-id=37798112;tmi-sent-ts=1503346078025 :tmi.twitch.tv CLEARCHAT #kritzware :blarev`,
+    ban_expected: {
+      ban_reason: 'This is the reason message',
+      room_id: 44667418,
+      target_user_id: 37798112,
+      tmi_sent_ts: 1503346078025,
+      type: 'ban',
+      channel: '#kritzware',
+      target_username: 'blarev'
+    }
   }
   
 }

@@ -35,10 +35,14 @@ Bot.on('error', err => {
 - [Events](https://github.com/kritzware/twitch-bot#events)
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
+  - [`timeout`](https://github.com/kritzware/twitch-bot#timeout---event-object)
+  - [`ban`](https://github.com/kritzware/twitch-bot#timeout---event-object)
   - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
   - [`close`](https://github.com/kritzware/twitch-bot#close---)
 - [Methods](https://github.com/kritzware/twitch-bot#methods)
   - [`say()`](https://github.com/kritzware/twitch-bot#saymessage-string-err-callback)
+  - [`timeout()`](https://github.com/kritzware/twitch-bot#timeoutusername-string-duration-int-reason-string)
+  - [`ban()`](https://github.com/kritzware/twitch-bot#banusername-string-reason-string)
   - [`close()`](https://github.com/kritzware/twitch-bot#close)
 
 ## Events
@@ -77,6 +81,55 @@ Bot.on('message', chatter => ... )
   message: 'This is a message PogChamp',
   username: 'Kritzware' }
   ```
+
+### `timeout - (event: Object)`
+Emitted when a user is timed out in the chat. The `ban_reason` attribute is `null` when no reason message is used.
+
+#### Chat Trigger
+```javascript
+kritzware: "/timeout {user} {duration} {reason}"
+```
+
+#### Usage
+```javascript
+Bot.on('timeout', event => ... )
+```
+
+#### Example Response
+```javascript
+{ ban_duration: 10, // seconds
+  ban_reason: 'Using a banned word',
+  room_id: 44667418,
+  target_user_id: 37798112,
+  tmi_sent_ts: 1503346029068,
+  type: 'timeout',
+  channel: '#kritzware',
+  target_username: 'blarev' }
+```
+
+### `ban - (event: Object)`
+Emitted when a user is permanently banned from the chat. The `ban_reason` attribute is `null` when no reason message is used.
+
+#### Usage
+```javascript
+Bot.on('ban', event => ... )
+```
+
+#### Chat Trigger
+```javascript
+kritzware: "/ban {user} {reason}"
+```
+
+#### Example Response
+```javascript
+{ ban_reason: 'Using a banned word',
+  room_id: 44667418,
+  target_user_id: 37798112,
+  tmi_sent_ts: 1503346078025,
+  type: 'ban',
+  channel: '#kritzware',
+  target_username: 'blarev' }
+```
 
 ### `error - (err: Object)`
 Emitted when any errors occurs in the Twitch IRC channel, or when attempting to connect to a channel.
@@ -131,6 +184,38 @@ Bot.say('Pretend this message is over 500 characters', err => {
   ts: '2017-08-13T16:38:54.989Z'
 })
 ```
+
+### `timeout(username: String, duration: int, reason: String)`
+Timeout a user from the chat. Default `duration` is 600 seconds. Optional `reason` message.
+
+#### Example
+```javascript
+Bot.timeout('kritzware', 10)
+// "kritzware was timed out for 10 seconds"
+
+Bot.timeout('kritzware', 5, 'Using a banned word')
+// "kritzware was timed out for 5 seconds, reason: 'Using a banned word'"
+
+Bot.on('message', chatter => {
+  if(chatter.message === 'xD') Bot.timeout(chatter.username, 10)
+})
+```
+
+### `ban(username: String, reason: String)`
+Permanently ban a user from the chat. Optional `reason` message.
+
+#### Example
+```javascript
+Bot.ban('kritzware')
+// "kritzware is now banned from the room"
+
+Bot.timeout('kritzware', 'Using a banned word')
+// "kritzware is now banned from the room, reason: 'Using a banned word'"
+
+Bot.on('message', chatter => {
+  if(chatter.message === 'Ban me!') Bot.ban(chatter.username)
+})
+``` 
 
 ### `close()`
 Closes the Twitch irc connection. Bot will be removed from the Twitch channel AND the irc server.
