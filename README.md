@@ -44,6 +44,7 @@ Bot.on('error', err => {
   - [`timeout()`](https://github.com/kritzware/twitch-bot#timeoutusername-string-duration-int-reason-string)
   - [`ban()`](https://github.com/kritzware/twitch-bot#banusername-string-reason-string)
   - [`close()`](https://github.com/kritzware/twitch-bot#close)
+- [Tests](https://github.com/kritzware/twitch-bot#running-tests)
 
 ## Events
 ### `join - ()`
@@ -223,4 +224,19 @@ Closes the Twitch irc connection. Bot will be removed from the Twitch channel AN
 #### Example
 ```javascript
 Bot.close()
+```
+
+## Running Tests
+Running the test suite requires at least two twitch accounts, one moderator account and one normal account. The channel used must be the same - This is so timeout/ban methods can be tested with the mod account. Using these two accounts, set the following environment variables:
+```javascript
+TWITCHBOT_USERNAME=mod_username
+TWITCHBOT_OAUTH=oauth:mod-oauth-token
+TWITCHBOT_CHANNEL=mod_channel
+TWITCHBOT_USERNAME_NON_MOD=non_mod_username
+TWITCHBOT_OAUTH_NON_MOD=oauth:non-mod-oauth-token
+TWITCHBOT_CHANNEL_NON_MOD=mod_channel
+```
+To run the tests (powered with [Mocha](https://mochajs.org/)), use the following command:
+```bash
+yarn test
 ```
