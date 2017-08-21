@@ -36,7 +36,7 @@ Bot.on('error', err => {
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
   - [`timeout`](https://github.com/kritzware/twitch-bot#timeout---event-object)
-  - [`ban`](https://github.com/kritzware/twitch-bot#timeout---event-object)
+  - [`ban`](https://github.com/kritzware/twitch-bot#ban---event-object)
   - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
   - [`close`](https://github.com/kritzware/twitch-bot#close---)
 - [Methods](https://github.com/kritzware/twitch-bot#methods)
