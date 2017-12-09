@@ -14,7 +14,7 @@ const TwitchBot = require('twitch-bot')
 const Bot = new TwitchBot({
   username: 'Kappa_Bot',
   oauth: 'oauth:dwiaj91j1KKona9j9d1420',
-  channel: 'twitch'
+  channels: ['twitch']
 })
 
 Bot.on('join', () => {
@@ -172,8 +172,8 @@ Bot.on('close', () => {
 ```
 
 ## Methods
-### `say(message: String, err: Callback)`
-Send a message in the currently connected Twitch channel. An optional callback is provided for validating if the message was sent correctly.
+### `say(message: String, channel: []Channel, err: Callback)`
+Send a message in the currently connected Twitch channel. `channels` parameter not needed when connected to a single channel. An optional callback is provided for validating if the message was sent correctly.
 
 #### Example
 ```javascript
@@ -184,10 +184,14 @@ Bot.say('Pretend this message is over 500 characters', err => {
   message: 'Exceeded PRIVMSG character limit (500)'
   ts: '2017-08-13T16:38:54.989Z'
 })
+
+// If connected to multiple channels
+Bot.say('message to #channel1', 'channel1')
+Bot.say('message to #channel2', 'channel2')
 ```
 
-### `timeout(username: String, duration: int, reason: String)`
-Timeout a user from the chat. Default `duration` is 600 seconds. Optional `reason` message.
+### `timeout(username: String, channel: []Channel, duration: int, reason: String)`
+Timeout a user from the chat. `channels` parameter not needed when connected to a single channel. Default `duration` is 600 seconds. Optional `reason` message.
 
 #### Example
 ```javascript
@@ -203,7 +207,7 @@ Bot.on('message', chatter => {
 ```
 
 ### `ban(username: String, reason: String)`
-Permanently ban a user from the chat. Optional `reason` message.
+Permanently ban a user from the chat. `channels` parameter not needed when connected to a single channel. Optional `reason` message.
 
 #### Example
 ```javascript
