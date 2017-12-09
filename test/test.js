@@ -11,18 +11,27 @@ describe('TwitchBot()', () => {
     expect(bot).to.be.an.instanceOf(TwitchBot)
     bot.close()
   })
-  it('should throw an error when missing required arguments', () => {
+  it('should throw an error if missing required arguments', () => {
     try {
       const bot = new TwitchBot({})
     } catch(err) {
-      expect(err.message).to.equal('missing required arguments')
+      expect(err.message).to.equal('missing or invalid required arguments')
     }
   })
+
+  it('should throw an error if channels is not an array', () => {
+    try {
+      const bot = new TwitchBot({channels: '#channel'})
+    } catch(err) {
+      expect(err.message).to.equal('missing or invalid required arguments')
+    }
+  })
+
   it('should normalize the channel name', () => {
-    const bot = utils.createBotInstance({ channel: 'Channel' })
-    const bot2 = utils.createBotInstance({ channel: '#ChanneL' })
-    expect(bot.channel).to.equal('#channel')
-    expect(bot2.channel).to.equal('#channel')
+    const bot = utils.createBotInstance({ channels: ['Channel'] })
+    const bot2 = utils.createBotInstance({ channels: ['#ChanneL'] })
+    expect(bot.channels[0]).to.equal('#channel')
+    expect(bot2.channels[0]).to.equal('#channel')
     bot.close()
     bot2.close()
   })
@@ -53,24 +62,30 @@ describe('TwitchBot()', () => {
 
 describe('say()', () => {
   it('should send a message in the channel', done => {
-    const reciever = utils.createBotInstance({})
+    const receiver = utils.createBotInstance({})
     const sender = utils.createBotInstance({})
-    reciever.on('join', () => {
-      reciever.on('message', chatter => {
+    receiver.on('join', () => {
+      receiver.on('message', chatter => {
+
         expect(chatter.message).to.equal('PogChamp')
-        reciever.close()
+        receiver.close()
         sender.close()
         done()
       })
     })
+
     sender.on('join', () => {
-      sender.say('PogChamp')
+        setTimeout(() => {
+          sender.say('PogChamp',sender.channels[0])
+        },1000)
     })
+
+
   })
   it('should fail when the message to send is over 500 characters', done => {
     const bot = utils.createBotInstance({})
     bot.on('join', () => {
-      bot.say(samples.PRIVMSG.long, err => {
+      bot.say(samples.PRIVMSG.long, bot.channels[0], err => {
         expect(err.sent).to.equal(false)
         expect(err.message).to.equal('Exceeded PRIVMSG character limit (500)')
         bot.close()
@@ -99,7 +114,7 @@ describe('timeout()', () => {
   it('should timeout a user in the twitch channel', done => {
     const bot = utils.createBotInstance({})
     const pleb = utils.createNonModBotInstance({})
-    
+
     const BAN_DURATION = 2
     const BAN_REASON = 'Test timeout message 1'
     const TARGET_USERNAME = utils.NON_MOD_CONFIG.USERNAME
@@ -117,12 +132,12 @@ describe('timeout()', () => {
       })
       bot.on('message', chatter => {
         if(chatter.message === TRIGGER_MESSAGE) {
-          bot.timeout(chatter.username, BAN_DURATION, BAN_REASON)
+          bot.timeout(chatter.username,bot.channels[0],BAN_DURATION, BAN_REASON)
         }
       })
     })
     pleb.on('join', () => {
-      pleb.say(TRIGGER_MESSAGE)
+      pleb.say(TRIGGER_MESSAGE, pleb.channels[0])
     })
   })
   afterEach(done => setTimeout(() => done(), 2000))
@@ -132,7 +147,7 @@ describe('ban()', () => {
   it('should ban a user in the twitch channel', done => {
     const bot = utils.createBotInstance({})
     const pleb = utils.createNonModBotInstance({})
-    
+
     const BAN_REASON = 'Test ban message 1'
     const TARGET_USERNAME = utils.NON_MOD_CONFIG.USERNAME
     // Add timestamp to avoid message rate limits
@@ -142,19 +157,19 @@ describe('ban()', () => {
       bot.on('ban', event => {
         expect(event.target_username).to.equal(TARGET_USERNAME)
         expect(event.ban_reason).to.equal(BAN_REASON)
-        bot.say('/unban ' + pleb.username)
+        bot.say('/unban ' + pleb.username, pleb.channels[0])
         bot.close()
         pleb.close()
         done()
       })
       bot.on('message', chatter => {
         if(chatter.message === TRIGGER_MESSAGE) {
-          bot.ban(chatter.username, BAN_REASON)
+          bot.ban(chatter.username, bot.channels[0], BAN_REASON)
         }
       })
     })
     pleb.on('join', () => {
-      pleb.say(TRIGGER_MESSAGE)
+      pleb.say(TRIGGER_MESSAGE, pleb.channels[0])
     })
   })
   afterEach(done => setTimeout(() => done(), 2000))
