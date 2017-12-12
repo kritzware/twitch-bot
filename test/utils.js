@@ -1,4 +1,3 @@
-require('dotenv').config();
 const TwitchBot = require('../index')
 
 module.exports = {
