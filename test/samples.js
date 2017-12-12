@@ -18,9 +18,9 @@ module.exports = {
       badges: { subscriber: 0, turbo: 1 },
       channel: '#lirik',
       message: 'lirikPRAY : PogChamp',
-      username: 'L1nk3n_'
+      username: 'l1nk3n_'
     },
-    long: 'PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp' 
+    long: 'PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp PogChamp'
   },
 
   CLEARCHAT: {
@@ -45,6 +45,72 @@ module.exports = {
       channel: '#kritzware',
       target_username: 'blarev'
     }
+  },
+
+  USERNOTICE: {
+    subscription_raw: `@badges=staff/1,broadcaster/1,turbo/1;color=#008000;display-name=ronni;emotes=;id=db25007f-7a18-43eb-9379-80131e44d633;login=ronni;mod=0;msg-id=resub;msg-param-months=6;msg-param-sub-plan=Prime;msg-param-sub-plan-name=Prime;room-id=1337;subscriber=1;system-msg=ronni\\shas\\ssubscribed\\sfor\\s6\\smonths!;tmi-sent-ts=1507246572675;turbo=1;user-id=1337;user-type=staff :tmi.twitch.tv USERNOTICE #dallas :Great stream -- keep it up!`,
+    subscription_expected: {
+      "badges": {
+       "broadcaster": 1,
+       "staff": 1,
+       "turbo": 1
+      },
+      "channel": "#dallas",
+      "color": "#008000",
+      "display_name": "ronni",
+      "emotes": null,
+      "id": "db25007f-7a18-43eb-9379-80131e44d633",
+      "login": "ronni",
+      "message": "Great stream -- keep it up!",
+      "mod": 0,
+      "msg_id": "resub",
+      "msg_param_months": 6,
+      "msg_param_sub_plan": "Prime",
+      "msg_param_sub_plan_name": "Prime",
+      "room_id": 1337,
+      "subscriber": 1,
+      "system_msg": "ronni has subscribed for 6 months!",
+      "tmi_sent_ts": 1507246572675,
+      "turbo": 1,
+      "user_id": 1337,
+      "user_type": "staff"
+      }
+
+  },
+
+  TAGSAMPLES: {
+    badges_raw: 'staff/1,broadcaster/1,turbo/1',
+    badges_expected: {
+      staff: 1,
+      broadcaster: 1,
+      turbo: 1
+    },
+
+    tags_raw:`@badges=staff/1,broadcaster/1,turbo/1;color=#008000;display-name=ronni;emotes=;id=db25007f-7a18-43eb-9379-80131e44d633;login=ronni;mod=0;msg-id=resub;msg-param-months=6;msg-param-sub-plan=Prime;msg-param-sub-plan-name=Prime;room-id=1337;subscriber=1;system-msg=ronni\\shas\\ssubscribed\\sfor\\s6\\smonths!;tmi-sent-ts=1507246572675;turbo=1;user-id=1337;user-type=staff`,
+    tags_expected: {
+      "badges": {
+       "broadcaster": 1,
+       "staff": 1,
+       "turbo": 1
+      },
+      "color": "#008000",
+      "display_name": "ronni",
+      "emotes": null,
+      "id": "db25007f-7a18-43eb-9379-80131e44d633",
+      "login": "ronni",
+      "mod": 0,
+      "msg_id": "resub",
+      "msg_param_months": 6,
+      "msg_param_sub_plan": "Prime",
+      "msg_param_sub_plan_name": "Prime",
+      "room_id": 1337,
+      "subscriber": 1,
+      "system_msg": "ronni has subscribed for 6 months!",
+      "tmi_sent_ts": 1507246572675,
+      "turbo": 1,
+      "user_id": 1337,
+      "user_type": "staff"
+    }
   }
-  
+
 }

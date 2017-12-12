@@ -45,4 +45,28 @@ describe('parser', () => {
     })
   })
 
+  describe('formatBADGES()', () => {
+    it('should format a badge-tag-string', () => {
+      const event = samples.TAGSAMPLES.badges_raw
+      const parsed = parser.formatBADGES(event)
+      expect(parsed).to.eql(samples.TAGSAMPLES.badges_expected)
+    })
+  })
+
+  describe('formatTAGS()', () => {
+    it('should format a tag-string', () => {
+      const event = samples.TAGSAMPLES.tags_raw
+      const parsed = parser.formatTAGS(event)
+      expect(parsed).to.eql(samples.TAGSAMPLES.tags_expected)
+    })
+  })
+
+  describe('formatUSERNOTICE()', () => {
+    it('should format a USERNOTICE subscription event', () => {
+      const event = samples.USERNOTICE.subscription_raw
+      const parsed = parser.formatUSERNOTICE(event)
+      expect(parsed).to.eql(samples.USERNOTICE.subscription_expected)
+    })
+  })
+
 })
