@@ -36,6 +36,7 @@ Bot.on('error', err => {
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
   - [`timeout`](https://github.com/kritzware/twitch-bot#timeout---event-object)
+  - [`subscription`](https://github.com/kritzware/twitch-bot#subscription---event-object)
   - [`ban`](https://github.com/kritzware/twitch-bot#ban---event-object)
   - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
   - [`close`](https://github.com/kritzware/twitch-bot#close---)
@@ -106,6 +107,43 @@ Bot.on('timeout', event => ... )
   type: 'timeout',
   channel: '#kritzware',
   target_username: 'blarev' }
+```
+
+### `subscription - (event: Object)`
+
+#### Usage
+```javascript
+Bot.on('subscription', event => ... )
+```
+
+#### Example Response
+```javascript
+  {
+  "badges": {
+   "broadcaster": 1,
+   "staff": 1,
+   "turbo": 1
+  },
+  "channel": "#dallas",
+  "color": "#008000",
+  "display_name": "ronni",
+  "emotes": null,
+  "id": "db25007f-7a18-43eb-9379-80131e44d633",
+  "login": "ronni",
+  "message": "Great stream -- keep it up!", //null if no message given!
+  "mod": 0,
+  "msg_id": "resub",
+  "msg_param_months": 6,
+  "msg_param_sub_plan": "Prime",
+  "msg_param_sub_plan_name": "Prime",
+  "room_id": 1337,
+  "subscriber": 1,
+  "system_msg": "ronni has subscribed for 6 months!",
+  "tmi_sent_ts": 1507246572675,
+  "turbo": 1,
+  "user_id": 1337,
+  "user_type": "staff"
+  }
 ```
 
 ### `ban - (event: Object)`
@@ -220,7 +258,7 @@ Bot.timeout('kritzware', 'Using a banned word')
 Bot.on('message', chatter => {
   if(chatter.message === 'Ban me!') Bot.ban(chatter.username)
 })
-``` 
+```
 
 ### `close()`
 Closes the Twitch irc connection. Bot will be removed from the Twitch channel AND the irc server.
