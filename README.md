@@ -110,6 +110,7 @@ Bot.on('timeout', event => ... )
 ```
 
 ### `subscription - (event: Object)`
+Emitted when a user subscribes to a channel and chose to share the subscription in chat.
 
 #### Usage
 ```javascript
