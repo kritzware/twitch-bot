@@ -44,6 +44,16 @@ describe('emulated IO tests', function() {
 
   });
 
+  it ("should handle error if improperly formatted auth", function(done) {
+
+    myBot.on('error', (err) => {
+        expect(err.message).to.equal('Improperly formatted auth');
+        done();
+    })
+    myBot.irc.emit("data","Improperly formatted auth\r\n");
+
+  });
+
   it ("should handle a channel message", function(done) {
 
     myBot.on('message', (chatter) => {
