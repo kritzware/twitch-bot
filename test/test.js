@@ -42,14 +42,6 @@ describe('TwitchBot()', () => {
       done()
     })
   })
-  it('should emit an error when twitch authentication fails', done => {
-    const bot = utils.createBotInstance({ username: 'kappa_123', oauth: 'oauth:123kappa' })
-    bot.on('error', err => {
-      expect(err.message).to.equal('Login authentication failed')
-      bot.close()
-      done()
-    })
-  })
   it('should emit an error when oauth format is invalid', done => {
     const bot = utils.createBotInstance({ oauth: 'oauthxD:kappa123' })
     bot.on('error', err => {
@@ -60,120 +52,7 @@ describe('TwitchBot()', () => {
   })
 })
 
-describe('say()', () => {
-  it('should send a message in the channel', done => {
-    const receiver = utils.createBotInstance({})
-    const sender = utils.createBotInstance({})
-    receiver.on('join', () => {
-      receiver.on('message', chatter => {
 
-        expect(chatter.message).to.equal('PogChamp')
-        receiver.close()
-        sender.close()
-        done()
-      })
-    })
-
-    sender.on('join', () => {
-        setTimeout(() => {
-          sender.say('PogChamp',sender.channels[0])
-        },1000)
-    })
-
-
-  })
-  it('should fail when the message to send is over 500 characters', done => {
-    const bot = utils.createBotInstance({})
-    bot.on('join', () => {
-      bot.say(samples.PRIVMSG.long, bot.channels[0], err => {
-        expect(err.sent).to.equal(false)
-        expect(err.message).to.equal('Exceeded PRIVMSG character limit (500)')
-        bot.close()
-        done()
-      })
-    })
-  })
-  afterEach(done => setTimeout(() => done(), 2000))
-})
-
-describe('close()', () => {
-  it('should close the irc connection and emit a close event', done => {
-    const bot = utils.createBotInstance({})
-    bot.on('join', () => {
-      bot.on('close', () => {
-        expect(bot.irc.destroyed).to.equal(true)
-        done()
-      })
-      bot.close()
-    })
-  })
-  afterEach(done => setTimeout(() => done(), 2000))
-})
-
-describe('timeout()', () => {
-  it('should timeout a user in the twitch channel', done => {
-    const bot = utils.createBotInstance({})
-    const pleb = utils.createNonModBotInstance({})
-
-    const BAN_DURATION = 2
-    const BAN_REASON = 'Test timeout message 1'
-    const TARGET_USERNAME = utils.NON_MOD_CONFIG.USERNAME
-    // Add timestamp to avoid message rate limits
-    const TRIGGER_MESSAGE = 'Timeout trigger message ' + new Date()
-
-    bot.on('join', () => {
-      bot.on('timeout', event => {
-        expect(event.target_username).to.equal(TARGET_USERNAME)
-        expect(event.ban_duration).to.equal(BAN_DURATION)
-        expect(event.ban_reason).to.equal(BAN_REASON)
-        bot.close()
-        pleb.close()
-        done()
-      })
-      bot.on('message', chatter => {
-        if(chatter.message === TRIGGER_MESSAGE) {
-          bot.timeout(chatter.username,bot.channels[0],BAN_DURATION, BAN_REASON)
-        }
-      })
-    })
-    pleb.on('join', () => {
-      pleb.say(TRIGGER_MESSAGE, pleb.channels[0])
-    })
-  })
-  afterEach(done => setTimeout(() => done(), 2000))
-})
-
-describe('ban()', () => {
-  it('should ban a user in the twitch channel', done => {
-    const bot = utils.createBotInstance({})
-    const pleb = utils.createNonModBotInstance({})
-
-    const BAN_REASON = 'Test ban message 1'
-    const TARGET_USERNAME = utils.NON_MOD_CONFIG.USERNAME
-    // Add timestamp to avoid message rate limits
-    const TRIGGER_MESSAGE = 'Ban trigger message ' + new Date()
-
-    bot.on('join', () => {
-      bot.on('ban', event => {
-        expect(event.target_username).to.equal(TARGET_USERNAME)
-        expect(event.ban_reason).to.equal(BAN_REASON)
-        bot.say('/unban ' + pleb.username, pleb.channels[0])
-        bot.close()
-        pleb.close()
-        done()
-      })
-      bot.on('message', chatter => {
-        if(chatter.message === TRIGGER_MESSAGE) {
-          bot.ban(chatter.username, bot.channels[0], BAN_REASON)
-        }
-      })
-    })
-    pleb.on('join', () => {
-      pleb.say(TRIGGER_MESSAGE, pleb.channels[0])
-    })
-  })
-  afterEach(done => setTimeout(() => done(), 2000))
-})
 
 /* Events */
 require('./events')
