@@ -67,6 +67,14 @@ describe('parser', () => {
       const parsed = parser.formatUSERNOTICE(event)
       expect(parsed).to.eql(samples.USERNOTICE.subscription_expected)
     })
+
+    it('should format a USERNOTICE subscription event and set message null if no message given', () => {
+      const event = samples.USERNOTICE.subscription_nomessage_raw
+      const parsed = parser.formatUSERNOTICE(event)
+      expect(parsed).to.eql(samples.USERNOTICE.subscription_nomessage_expected)
+    })
   })
+
+
 
 })
