@@ -1,3 +1,4 @@
+require('dotenv').config();
 const TwitchBot = require('../index')
 
 module.exports = {
@@ -13,19 +14,19 @@ module.exports = {
     CHANNEL: process.env.TWITCHBOT_CHANNEL_NON_MOD
   },
 
-  createBotInstance({ username, oauth, channel }) {
+  createBotInstance({ username, oauth, channels }) {
     return new TwitchBot({
       username: username || this.CONFIG.USERNAME,
       oauth: oauth || this.CONFIG.OAUTH,
-      channel: channel || this.CONFIG.CHANNEL
+      channels: channels|| [this.CONFIG.CHANNEL]
     })
   },
 
-  createNonModBotInstance({ username, oauth, channel }) {
+  createNonModBotInstance({ username, oauth, channels }) {
     return new TwitchBot({
       username: username || this.NON_MOD_CONFIG.USERNAME,
       oauth: oauth || this.NON_MOD_CONFIG.OAUTH,
-      channel: channel || this.NON_MOD_CONFIG.CHANNEL
+      channels: channels || [this.CONFIG.CHANNEL]
     })
   }
 

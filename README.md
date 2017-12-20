@@ -14,7 +14,7 @@ const TwitchBot = require('twitch-bot')
 const Bot = new TwitchBot({
   username: 'Kappa_Bot',
   oauth: 'oauth:dwiaj91j1KKona9j9d1420',
-  channel: 'twitch'
+  channels: ['twitch']
 })
 
 Bot.on('join', () => {
@@ -36,6 +36,7 @@ Bot.on('error', err => {
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
   - [`timeout`](https://github.com/kritzware/twitch-bot#timeout---event-object)
+  - [`subscription`](https://github.com/kritzware/twitch-bot#subscription---event-object)
   - [`ban`](https://github.com/kritzware/twitch-bot#ban---event-object)
   - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
   - [`close`](https://github.com/kritzware/twitch-bot#close---)
@@ -108,6 +109,44 @@ Bot.on('timeout', event => ... )
   target_username: 'blarev' }
 ```
 
+### `subscription - (event: Object)`
+Emitted when a user subscribes to a channel and chose to share the subscription in chat.
+
+#### Usage
+```javascript
+Bot.on('subscription', event => ... )
+```
+
+#### Example Response
+```javascript
+  {
+  "badges": {
+   "broadcaster": 1,
+   "staff": 1,
+   "turbo": 1
+  },
+  "channel": "#dallas",
+  "color": "#008000",
+  "display_name": "ronni",
+  "emotes": null,
+  "id": "db25007f-7a18-43eb-9379-80131e44d633",
+  "login": "ronni",
+  "message": "Great stream -- keep it up!", //null if no message given!
+  "mod": 0,
+  "msg_id": "resub",
+  "msg_param_months": 6,
+  "msg_param_sub_plan": "Prime",
+  "msg_param_sub_plan_name": "Prime",
+  "room_id": 1337,
+  "subscriber": 1,
+  "system_msg": "ronni has subscribed for 6 months!",
+  "tmi_sent_ts": 1507246572675,
+  "turbo": 1,
+  "user_id": 1337,
+  "user_type": "staff"
+  }
+```
+
 ### `ban - (event: Object)`
 Emitted when a user is permanently banned from the chat. The `ban_reason` attribute is `null` when no reason message is used.
 
@@ -172,8 +211,8 @@ Bot.on('close', () => {
 ```
 
 ## Methods
-### `say(message: String, err: Callback)`
-Send a message in the currently connected Twitch channel. An optional callback is provided for validating if the message was sent correctly.
+### `say(message: String, channel: []Channel, err: Callback)`
+Send a message in the currently connected Twitch channel. `channels` parameter not needed when connected to a single channel. An optional callback is provided for validating if the message was sent correctly.
 
 #### Example
 ```javascript
@@ -184,10 +223,14 @@ Bot.say('Pretend this message is over 500 characters', err => {
   message: 'Exceeded PRIVMSG character limit (500)'
   ts: '2017-08-13T16:38:54.989Z'
 })
+
+// If connected to multiple channels
+Bot.say('message to #channel1', 'channel1')
+Bot.say('message to #channel2', 'channel2')
 ```
 
-### `timeout(username: String, duration: int, reason: String)`
-Timeout a user from the chat. Default `duration` is 600 seconds. Optional `reason` message.
+### `timeout(username: String, channel: []Channel, duration: int, reason: String)`
+Timeout a user from the chat. `channels` parameter not needed when connected to a single channel. Default `duration` is 600 seconds. Optional `reason` message.
 
 #### Example
 ```javascript
@@ -203,7 +246,7 @@ Bot.on('message', chatter => {
 ```
 
 ### `ban(username: String, reason: String)`
-Permanently ban a user from the chat. Optional `reason` message.
+Permanently ban a user from the chat. `channels` parameter not needed when connected to a single channel. Optional `reason` message.
 
 #### Example
 ```javascript
@@ -216,7 +259,7 @@ Bot.timeout('kritzware', 'Using a banned word')
 Bot.on('message', chatter => {
   if(chatter.message === 'Ban me!') Bot.ban(chatter.username)
 })
-``` 
+```
 
 ### `close()`
 Closes the Twitch irc connection. Bot will be removed from the Twitch channel AND the irc server.
