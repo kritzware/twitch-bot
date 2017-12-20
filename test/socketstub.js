@@ -14,7 +14,7 @@ const samples= require('./samples');
       oauth: 'oauth:123abc',
       channels: ['test']
     })
-    
+
     writeStub = sinon.stub(myBot.irc, 'write')
     connectStub.callsFake(function(){
       this.emit('connect');
@@ -25,6 +25,14 @@ const samples= require('./samples');
   });
 
 describe('emulated IO tests', function() {
+
+  it ("should emit join event", function(done) {
+
+    myBot.on('join', (err) => {
+        done();
+    })
+    myBot.afterConnect();
+  });
 
   it ("should handle error if invalid auth", function(done) {
 

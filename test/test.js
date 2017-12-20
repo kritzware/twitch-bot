@@ -4,6 +4,7 @@ const expect = require('chai').expect
 const TwitchBot = require('../index')
 const samples = require('./samples')
 const utils = require('./utils')
+const socketstub = require('./socketstub')
 
 describe('TwitchBot()', () => {
   it('should create a new Bot instance', () => {
@@ -35,24 +36,5 @@ describe('TwitchBot()', () => {
     bot.close()
     bot2.close()
   })
-  it('should emit a join event when connecting to twitch irc', done => {
-    const bot = utils.createBotInstance({})
-    bot.on('join', () => {
-      bot.close()
-      done()
-    })
-  })
-  it('should emit an error when oauth format is invalid', done => {
-    const bot = utils.createBotInstance({ oauth: 'oauthxD:kappa123' })
-    bot.on('error', err => {
-      expect(err.message).to.equal('Improperly formatted auth')
-      bot.close()
-      done()
-    })
-  })
+
 })
-
-
-
-/* Events */
-require('./events')
