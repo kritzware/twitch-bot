@@ -110,7 +110,7 @@ Bot.on('timeout', event => ... )
 ```
 
 ### `subscription - (event: Object)`
-Emitted when a user subscribes to a channel and chose to share the subscription in chat.
+Emitted when a user subscribes to a channel and chooses to share the subscription in chat.
 
 #### Usage
 ```javascript
@@ -119,7 +119,7 @@ Bot.on('subscription', event => ... )
 
 #### Example Response
 ```javascript
-  {
+{
   "badges": {
    "broadcaster": 1,
    "staff": 1,
@@ -131,7 +131,7 @@ Bot.on('subscription', event => ... )
   "emotes": null,
   "id": "db25007f-7a18-43eb-9379-80131e44d633",
   "login": "ronni",
-  "message": "Great stream -- keep it up!", //null if no message given!
+  "message": "Great stream -- keep it up!", // null if no message given
   "mod": 0,
   "msg_id": "resub",
   "msg_param_months": 6,
@@ -144,7 +144,7 @@ Bot.on('subscription', event => ... )
   "turbo": 1,
   "user_id": 1337,
   "user_type": "staff"
-  }
+}
 ```
 
 ### `ban - (event: Object)`

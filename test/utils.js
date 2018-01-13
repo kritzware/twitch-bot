@@ -17,7 +17,7 @@ module.exports = {
     return new TwitchBot({
       username: username || this.CONFIG.USERNAME,
       oauth: oauth || this.CONFIG.OAUTH,
-      channels: channels|| [this.CONFIG.CHANNEL]
+      channels: channels || [this.CONFIG.CHANNEL]
     })
   },
 
