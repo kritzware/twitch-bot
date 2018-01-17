@@ -191,6 +191,14 @@ Response:
 { message: 'Improperly formatted auth' }
 ```
 
+##### `Your message was not sent because you are sending messages too quickly`
+This error occurs when a message fails to send due to sending messages too quickly. You can avoid this by making the bot a moderator in the channel, if applicable/allowed.
+
+Response:
+```javascript
+{ message: 'Your message was not sent because you are sending messages too quickly' }
+```
+
 #### Usage
 ```javascript
 Bot.on('error', err => ... )
