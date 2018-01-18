@@ -26,14 +26,6 @@ const samples= require('./samples');
 
 describe('emulated IO tests', function() {
 
-  it ("should emit join event", function(done) {
-
-    myBot.on('join', (err) => {
-        done();
-    })
-    myBot.afterConnect();
-  });
-
   it ("should handle error if invalid auth", function(done) {
 
     myBot.on('error', (err) => {
@@ -151,7 +143,7 @@ describe('say()', () => {
 
 describe('join()', () => {
 
-  it('should send a message in the channel', done => {
+  it('should send properly formatted message to join a channel without a leading hashtag', done => {
     writeStub.callsFake(function (data, encoding, cb) {
       let received=writeStub.args[writeStub.callCount - 1][0];
         expect(received).to.eql(`JOIN #testchannel\r\n`);
@@ -161,7 +153,7 @@ describe('join()', () => {
 
   })
 
-  it('should send a message in the channel22', done => {
+  it('should send properly formatted message to join a channel with a leading hashtag', done => {
     writeStub.callsFake(function (data, encoding, cb) {
       let received=writeStub.args[writeStub.callCount - 1][0];
         expect(received).to.eql(`JOIN #testchannel\r\n`);
@@ -174,7 +166,7 @@ describe('join()', () => {
 
 describe('part()', () => {
 
-  it('should send a message in the channel', done => {
+  it('should send properly formatted message to part from a channel without a leading hashtag', done => {
     writeStub.callsFake(function (data, encoding, cb) {
       let received=writeStub.args[writeStub.callCount - 1][0];
         expect(received).to.eql(`PART #testchannel\r\n`);
@@ -184,7 +176,7 @@ describe('part()', () => {
 
   })
 
-  it('should send a message in the channel22', done => {
+  it('should send properly formatted message to part from a channel with a leading hashtag', done => {
     writeStub.callsFake(function (data, encoding, cb) {
       let received=writeStub.args[writeStub.callCount - 1][0];
         expect(received).to.eql(`PART #testchannel\r\n`);
