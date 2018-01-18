@@ -34,6 +34,7 @@ Bot.on('error', err => {
 ## Index
 - [Events](https://github.com/kritzware/twitch-bot#events)
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
+  - [`part`](https://github.com/kritzware/twitch-bot#part---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
   - [`timeout`](https://github.com/kritzware/twitch-bot#timeout---event-object)
   - [`subscription`](https://github.com/kritzware/twitch-bot#subscription---event-object)
@@ -41,6 +42,8 @@ Bot.on('error', err => {
   - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
   - [`close`](https://github.com/kritzware/twitch-bot#close---)
 - [Methods](https://github.com/kritzware/twitch-bot#methods)
+  - [`join()`](https://github.com/kritzware/twitch-bot#join-channelname--string))
+  - [`part()`](https://github.com/kritzware/twitch-bot#part-channelname--string)  
   - [`say()`](https://github.com/kritzware/twitch-bot#saymessage-string-err-callback)
   - [`timeout()`](https://github.com/kritzware/twitch-bot#timeoutusername-string-duration-int-reason-string)
   - [`ban()`](https://github.com/kritzware/twitch-bot#banusername-string-reason-string)
@@ -49,10 +52,17 @@ Bot.on('error', err => {
 
 ## Events
 ### `join - ()`
-This event is emitted when a connection has been made to the the channel
+This event is emitted when a channel has been joined successfully.
 #### Usage
 ```javascript
-Bot.on('join', () => ... )
+Bot.on('join', (channel) => ... )
+```
+
+### `part - ()`
+This event is emitted when a channel has been left successfully.
+#### Usage
+```javascript
+Bot.on('part', (channel) => ... )
 ```
 
 
@@ -219,6 +229,12 @@ Bot.on('close', () => {
 ```
 
 ## Methods
+### `join(channelname: String)`
+Attempts to join a channel. If successful, emits the 'join'-Event.
+
+### `part(channelname: String)`
+Attempts to part from a channel. If successful, emits the 'part'-Event.
+
 ### `say(message: String, channel: []Channel, err: Callback)`
 Send a message in the currently connected Twitch channel. `channels` parameter not needed when connected to a single channel. An optional callback is provided for validating if the message was sent correctly.
 
