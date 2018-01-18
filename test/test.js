@@ -8,7 +8,7 @@ const socketstub = require('./socketstub')
 
 describe('TwitchBot()', () => {
   it('should create a new Bot instance', () => {
-    const bot = utils.createBotInstance({})
+    const bot = utils.createBotInstance({username: 'Test', oauth: '123435', channels: ['twitch']})
     expect(bot).to.be.an.instanceOf(TwitchBot)
     bot.close()
   })
@@ -29,8 +29,8 @@ describe('TwitchBot()', () => {
   })
 
   it('should normalize the channel name', () => {
-    const bot = utils.createBotInstance({ channels: ['Channel'] })
-    const bot2 = utils.createBotInstance({ channels: ['#ChanneL'] })
+    const bot = utils.createBotInstance({ username: 'Test', oauth: '123435', channels: ['Channel'] })
+    const bot2 = utils.createBotInstance({ username: 'Test', oauth: '123435', channels: ['#ChanneL'] })
     expect(bot.channels[0]).to.equal('#channel')
     expect(bot2.channels[0]).to.equal('#channel')
     bot.close()
