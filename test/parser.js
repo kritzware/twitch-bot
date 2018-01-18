@@ -61,6 +61,22 @@ describe('parser', () => {
     })
   })
 
+  describe('formatJOIN()', () => {
+    it('should format a tag-string', () => {
+      const event = ':<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel';
+      const parsed = parser.formatJOIN(event)
+      expect(parsed).to.eql('#testchannel')
+    })
+  })
+
+  describe('formatPART()', () => {
+    it('should format a tag-string', () => {
+      const event = ':<user>!<user>@<user>.tmi.twitch.tv PART #testchannel';
+      const parsed = parser.formatPART(event)
+      expect(parsed).to.eql('#testchannel')
+    })
+  })
+
   describe('formatUSERNOTICE()', () => {
     it('should format a USERNOTICE subscription event', () => {
       const event = samples.USERNOTICE.subscription_raw
@@ -75,6 +91,16 @@ describe('parser', () => {
     })
   })
 
+  describe('formatCHANNEL()', () => {
+    it('should format a channel without hashtag and some uppercase letters to contain a hashtag and only lowercase afterwards', () => {
+      const parsed = parser.formatCHANNEL('someChannEl')
+      expect(parsed).to.eql('#somechannel')
+    })
 
+    it('should format a channel with hashtag and some uppercase letters to contain a hashtag and only lowercase afterwards', () => {
+      const parsed = parser.formatCHANNEL('#someChannEl')
+      expect(parsed).to.eql('#somechannel')
+    })
+  })
 
 })

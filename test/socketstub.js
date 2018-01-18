@@ -94,6 +94,26 @@ describe('emulated IO tests', function() {
 
   });
 
+  it ("should handle a self-channel-join message", function(done) {
+
+    myBot.on('join', (chatter) => {
+      expect(chatter).to.eql("#testchannel");
+      done();
+    })
+    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel");
+
+  });
+
+  it ("should handle a self-channel-part message", function(done) {
+
+    myBot.on('part', (chatter) => {
+      expect(chatter).to.eql("#testchannel");
+      done();
+    })
+    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv PART #testchannel");
+
+  });
+
   it ("should reply to a server ping", function(done) {
 
     writeStub.callsFake(function (data, encoding, cb) {
@@ -127,4 +147,50 @@ describe('say()', () => {
         done()
     })
   })
+})
+
+describe('join()', () => {
+
+  it('should send a message in the channel', done => {
+    writeStub.callsFake(function (data, encoding, cb) {
+      let received=writeStub.args[writeStub.callCount - 1][0];
+        expect(received).to.eql(`JOIN #testchannel\r\n`);
+        done();
+    });
+    myBot.join('testchannel');
+
   })
+
+  it('should send a message in the channel22', done => {
+    writeStub.callsFake(function (data, encoding, cb) {
+      let received=writeStub.args[writeStub.callCount - 1][0];
+        expect(received).to.eql(`JOIN #testchannel\r\n`);
+        done();
+    });
+    myBot.join('#testchannel');
+
+  })
+})
+
+describe('part()', () => {
+
+  it('should send a message in the channel', done => {
+    writeStub.callsFake(function (data, encoding, cb) {
+      let received=writeStub.args[writeStub.callCount - 1][0];
+        expect(received).to.eql(`PART #testchannel\r\n`);
+        done();
+    });
+    myBot.part('testchannel');
+
+  })
+
+  it('should send a message in the channel22', done => {
+    writeStub.callsFake(function (data, encoding, cb) {
+      let received=writeStub.args[writeStub.callCount - 1][0];
+        expect(received).to.eql(`PART #testchannel\r\n`);
+        done();
+    });
+    myBot.part('#testchannel');
+
+  })
+})
