@@ -11,8 +11,7 @@ const samples= require('./samples');
   beforeEach((done)=>{
     myBot = new TwitchBot({
       username: 'test',
-      oauth: 'oauth:123abc',
-      channels: ['test']
+      oauth: 'oauth:123abc'
     })
 
     writeStub = sinon.stub(myBot.irc, 'write')
@@ -90,6 +89,7 @@ describe('emulated IO tests', function() {
 
     myBot.on('join', (chatter) => {
       expect(chatter).to.eql("#testchannel");
+      expect(myBot.channels).to.eql(["#testchannel"]);
       done();
     })
     myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel");
@@ -100,8 +100,10 @@ describe('emulated IO tests', function() {
 
     myBot.on('part', (chatter) => {
       expect(chatter).to.eql("#testchannel");
+      expect(myBot.channels).to.eql([]);
       done();
     })
+    myBot.channels = ["#testchannel"];
     myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv PART #testchannel");
 
   });
