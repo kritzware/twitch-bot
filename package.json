@@ -1,6 +1,6 @@
 {
   "name": "twitch-bot",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Easily create chat bots for Twitch.tv",
   "main": "index.js",
   "scripts": {
