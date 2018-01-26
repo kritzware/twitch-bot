@@ -55,14 +55,14 @@ Bot.on('error', err => {
 This event is emitted when a channel has been joined successfully.
 #### Usage
 ```javascript
-Bot.on('join', (channel) => ... )
+Bot.on('join', channel => ... )
 ```
 
 ### `part - ()`
 This event is emitted when a channel has been left successfully.
 #### Usage
 ```javascript
-Bot.on('part', (channel) => ... )
+Bot.on('part', channel => ... )
 ```
 
 
@@ -229,11 +229,27 @@ Bot.on('close', () => {
 ```
 
 ## Methods
-### `join(channelname: String)`
-Attempts to join a channel. If successful, emits the 'join'-Event.
+### `join(channel: String)`
+Attempts to join a channel. If successful, emits the 'join' event.
 
-### `part(channelname: String)`
-Attempts to part from a channel. If successful, emits the 'part'-Event.
+#### Example
+```javascript
+Bot.on('join', channel => {
+  console.log(`Bot joined ${channel}`)
+})
+Bot.join('channel2')
+```
+
+### `part(channel: String)`
+Attempts to part from a channel. If successful, emits the 'part' event.
+
+#### Example
+```javascript
+Bot.on('part', channel => {
+  console.log(`Bot left ${channel}`)
+})
+Bot.part('channel2')
+```
 
 ### `say(message: String, channel: []Channel, err: Callback)`
 Send a message in the currently connected Twitch channel. `channels` parameter not needed when connected to a single channel. An optional callback is provided for validating if the message was sent correctly.
