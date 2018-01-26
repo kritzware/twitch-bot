@@ -11,8 +11,7 @@ const samples= require('./samples');
   beforeEach((done)=>{
     myBot = new TwitchBot({
       username: 'test',
-      oauth: 'oauth:123abc',
-      channels: ['test']
+      oauth: 'oauth:123abc'
     })
 
     writeStub = sinon.stub(myBot.irc, 'write')
@@ -25,14 +24,6 @@ const samples= require('./samples');
   });
 
 describe('emulated IO tests', function() {
-
-  it ("should emit join event", function(done) {
-
-    myBot.on('join', (err) => {
-        done();
-    })
-    myBot.afterConnect();
-  });
 
   it ("should handle error if invalid auth", function(done) {
 
@@ -94,6 +85,29 @@ describe('emulated IO tests', function() {
 
   });
 
+  it ("should handle a self-channel-join message", function(done) {
+
+    myBot.on('join', (chatter) => {
+      expect(chatter).to.eql("#testchannel");
+      expect(myBot.channels).to.eql(["#testchannel"]);
+      done();
+    })
+    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel");
+
+  });
+
+  it ("should handle a self-channel-part message", function(done) {
+
+    myBot.on('part', (chatter) => {
+      expect(chatter).to.eql("#testchannel");
+      expect(myBot.channels).to.eql([]);
+      done();
+    })
+    myBot.channels = ["#testchannel"];
+    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv PART #testchannel");
+
+  });
+
   it ("should reply to a server ping", function(done) {
 
     writeStub.callsFake(function (data, encoding, cb) {
@@ -127,4 +141,50 @@ describe('say()', () => {
         done()
     })
   })
+})
+
+describe('join()', () => {
+
+  it('should send properly formatted message to join a channel without a leading hashtag', done => {
+    writeStub.callsFake(function (data, encoding, cb) {
+      let received=writeStub.args[writeStub.callCount - 1][0];
+        expect(received).to.eql(`JOIN #testchannel\r\n`);
+        done();
+    });
+    myBot.join('testchannel');
+
   })
+
+  it('should send properly formatted message to join a channel with a leading hashtag', done => {
+    writeStub.callsFake(function (data, encoding, cb) {
+      let received=writeStub.args[writeStub.callCount - 1][0];
+        expect(received).to.eql(`JOIN #testchannel\r\n`);
+        done();
+    });
+    myBot.join('#testchannel');
+
+  })
+})
+
+describe('part()', () => {
+
+  it('should send properly formatted message to part from a channel without a leading hashtag', done => {
+    writeStub.callsFake(function (data, encoding, cb) {
+      let received=writeStub.args[writeStub.callCount - 1][0];
+        expect(received).to.eql(`PART #testchannel\r\n`);
+        done();
+    });
+    myBot.part('testchannel');
+
+  })
+
+  it('should send properly formatted message to part from a channel with a leading hashtag', done => {
+    writeStub.callsFake(function (data, encoding, cb) {
+      let received=writeStub.args[writeStub.callCount - 1][0];
+        expect(received).to.eql(`PART #testchannel\r\n`);
+        done();
+    });
+    myBot.part('#testchannel');
+
+  })
+})
