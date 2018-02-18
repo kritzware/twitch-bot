@@ -96,6 +96,17 @@ describe('emulated IO tests', function() {
 
   });
 
+  it ("should handle a self-channel-join message with \r\n", function(done) {
+
+    myBot.on('join', (chatter) => {
+      expect(chatter).to.eql("#testchannel");
+      expect(myBot.channels).to.eql(["#testchannel"]);
+      done();
+    })
+    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel\r\n");
+
+  });
+
   it ("should handle a self-channel-part message", function(done) {
 
     myBot.on('part', (chatter) => {
@@ -105,6 +116,18 @@ describe('emulated IO tests', function() {
     })
     myBot.channels = ["#testchannel"];
     myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv PART #testchannel");
+
+  });
+
+  it ("should handle a self-channel-part message with \r\n", function(done) {
+
+    myBot.on('part', (chatter) => {
+      expect(chatter).to.eql("#testchannel");
+      expect(myBot.channels).to.eql([]);
+      done();
+    })
+    myBot.channels = ["#testchannel"];
+    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv PART #testchannel\r\n");
 
   });
 
