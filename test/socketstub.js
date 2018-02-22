@@ -8,9 +8,11 @@ var myBot = null;
 var writeStub = null;
 const samples= require('./samples');
 
+const USERNAME = 'test'
+
   beforeEach((done)=>{
     myBot = new TwitchBot({
-      username: 'test',
+      username: USERNAME,
       oauth: 'oauth:123abc'
     })
 
@@ -86,50 +88,50 @@ describe('emulated IO tests', function() {
   });
 
   it ("should handle a self-channel-join message", function(done) {
+    const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel`
+
+    myBot.on('join', channel => {
+      expect(channel).to.eql("#testchannel")
+      expect(myBot.channels).to.eql(["#testchannel"])
+      done()
+    })
+    myBot.irc.emit("data", JOIN_MESSAGE)
+  })
+
+  it ("should handle a self-channel-join message with \\r\\n", function(done) {
+    const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel\r\n`
 
     myBot.on('join', (chatter) => {
-      expect(chatter).to.eql("#testchannel");
-      expect(myBot.channels).to.eql(["#testchannel"]);
-      done();
+      expect(chatter).to.eql("#testchannel")
+      expect(myBot.channels).to.eql(["#testchannel"])
+      done()
     })
-    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel");
-
-  });
-
-  it ("should handle a self-channel-join message with \r\n", function(done) {
-
-    myBot.on('join', (chatter) => {
-      expect(chatter).to.eql("#testchannel");
-      expect(myBot.channels).to.eql(["#testchannel"]);
-      done();
-    })
-    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel\r\n");
-
-  });
+    myBot.irc.emit("data", JOIN_MESSAGE)
+  })
 
   it ("should handle a self-channel-part message", function(done) {
+    const PART_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv PART #testchannel`
 
     myBot.on('part', (chatter) => {
-      expect(chatter).to.eql("#testchannel");
-      expect(myBot.channels).to.eql([]);
-      done();
+      expect(chatter).to.eql("#testchannel")
+      expect(myBot.channels).to.eql([])
+      done()
     })
-    myBot.channels = ["#testchannel"];
-    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv PART #testchannel");
+    myBot.channels = ["#testchannel"]
+    myBot.irc.emit("data", PART_MESSAGE)
+  })
 
-  });
-
-  it ("should handle a self-channel-part message with \r\n", function(done) {
+  it ("should handle a self-channel-part message with \\r\\n", function(done) {
+    const PART_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv PART #testchannel\r\n`
 
     myBot.on('part', (chatter) => {
-      expect(chatter).to.eql("#testchannel");
-      expect(myBot.channels).to.eql([]);
-      done();
+      expect(chatter).to.eql("#testchannel")
+      expect(myBot.channels).to.eql([])
+      done()
     })
-    myBot.channels = ["#testchannel"];
-    myBot.irc.emit("data",":<user>!<user>@<user>.tmi.twitch.tv PART #testchannel\r\n");
-
-  });
+    myBot.channels = ["#testchannel"]
+    myBot.irc.emit("data", PART_MESSAGE)
+  })
 
   it ("should reply to a server ping", function(done) {
 
