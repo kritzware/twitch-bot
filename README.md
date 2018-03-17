@@ -17,7 +17,7 @@ const Bot = new TwitchBot({
   channels: ['twitch']
 })
 
-Bot.on('join', (channel) => {
+Bot.on('join', channel => {
   console.log(`Joined channel: ${channel}`)
 })
 
