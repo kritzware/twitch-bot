@@ -17,18 +17,20 @@ const Bot = new TwitchBot({
   channels: ['twitch']
 })
 
-Bot.on('join', () => {
-
-  Bot.on('message', chatter => {
-    if(chatter.message === '!test') {
-      Bot.say('Command executed! PogChamp')
-    }
-  })
+Bot.on('join', channel => {
+  console.log(`Joined channel: ${channel}`)
 })
 
 Bot.on('error', err => {
   console.log(err)
 })
+
+Bot.on('message', chatter => {
+  if(chatter.message === '!test') {
+    Bot.say('Command executed! PogChamp')
+  }
+})
+
 ```
 
 ## Index
