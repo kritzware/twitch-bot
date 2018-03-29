@@ -3,7 +3,9 @@ var sinon = require('sinon');
 const TwitchBot = require('../index');
 const expect = require('chai').expect;
 
-var connectStub = sinon.stub(TwitchBot.prototype, '_connect')
+var connectStub = TwitchBot.prototype._connect.displayName === '_connect' ?
+                  TwitchBot.prototype._connect
+                  : sinon.stub(TwitchBot.prototype, '_connect')
 var myBot = null;
 var writeStub = null;
 const samples= require('./samples');
@@ -15,7 +17,8 @@ describe('emulated IO tests', function() {
   beforeEach((done)=>{
     myBot = new TwitchBot({
       username: USERNAME,
-      oauth: 'oauth:123abc'
+      oauth: 'oauth:123abc',
+      channels: ["testchannel"]
     })
 
     writeStub = sinon.stub(myBot.irc, 'write')
@@ -147,11 +150,14 @@ describe('emulated IO tests', function() {
 describe('say()', () => {
 
   it('should send a message in the channel', done => {
+
+    myBot.irc.emit('data', `@${myBot.username}.tmi.twitch.tv JOIN #testchannel`)
     writeStub.callsFake(function (data, encoding, cb) {
       let received=writeStub.args[writeStub.callCount - 1][0];
         expect(received).to.eql(`PRIVMSG ${myBot.channels[0]} :testmessage\r\n`);
         done();
     });
+
     myBot.say('testmessage',myBot.channels[0]);
 
 
