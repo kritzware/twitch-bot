@@ -10,6 +10,8 @@ const samples= require('./samples');
 
 const USERNAME = 'test'
 
+
+describe('emulated IO tests', function() {
   beforeEach((done)=>{
     myBot = new TwitchBot({
       username: USERNAME,
@@ -20,13 +22,9 @@ const USERNAME = 'test'
     connectStub.callsFake(function(){
       this.emit('connect');
     })
-
     myBot.afterConnect();
     done();
   });
-
-describe('emulated IO tests', function() {
-
   it ("should handle error if invalid auth", function(done) {
 
     myBot.on('error', (err) => {
