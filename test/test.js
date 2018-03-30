@@ -15,7 +15,7 @@ describe('TwitchBot()', () => {
   it('should throw an error if missing required arguments', () => {
     try {
       const bot = new TwitchBot({})
-    } catch(err) {
+    } catch (err) {
       expect(err.message).to.equal('missing or invalid required arguments')
     }
   })
@@ -23,7 +23,7 @@ describe('TwitchBot()', () => {
   it('should throw an error if channels is not an array', () => {
     try {
       const bot = new TwitchBot({channels: '#channel'})
-    } catch(err) {
+    } catch (err) {
       expect(err.message).to.equal('missing or invalid required arguments')
     }
   })
@@ -36,5 +36,4 @@ describe('TwitchBot()', () => {
     bot.close()
     bot2.close()
   })
-
 })

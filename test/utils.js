@@ -1,7 +1,7 @@
 const TwitchBot = require('../index')
 
 module.exports = {
-    CONFIG: {
+  CONFIG: {
     USERNAME: process.env.TWITCHBOT_USERNAME,
     OAUTH: process.env.TWITCHBOT_OAUTH,
     CHANNEL: process.env.TWITCHBOT_CHANNEL
@@ -13,7 +13,7 @@ module.exports = {
     CHANNEL: process.env.TWITCHBOT_CHANNEL_NON_MOD
   },
 
-  createBotInstance({ username, oauth, channels }) {
+  createBotInstance ({ username, oauth, channels }) {
     return new TwitchBot({
       username: username || this.CONFIG.USERNAME,
       oauth: oauth || this.CONFIG.OAUTH,
@@ -21,7 +21,7 @@ module.exports = {
     })
   },
 
-  createNonModBotInstance({ username, oauth, channels }) {
+  createNonModBotInstance ({ username, oauth, channels }) {
     return new TwitchBot({
       username: username || this.NON_MOD_CONFIG.USERNAME,
       oauth: oauth || this.NON_MOD_CONFIG.OAUTH,

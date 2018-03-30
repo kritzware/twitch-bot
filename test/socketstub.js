@@ -1,219 +1,192 @@
-var sinon = require('sinon');
+const sinon = require('sinon')
 
-const TwitchBot = require('../index');
-const expect = require('chai').expect;
+const TwitchBot = require('../index')
+const {expect} = require('chai')
 
-var connectStub = TwitchBot.prototype._connect.displayName === '_connect' ?
-                  TwitchBot.prototype._connect
-                  : sinon.stub(TwitchBot.prototype, '_connect')
-var myBot = null;
-var writeStub = null;
-const samples= require('./samples');
+const connectStub = TwitchBot.prototype._connect.displayName === '_connect'
+  ? TwitchBot.prototype._connect
+  : sinon.stub(TwitchBot.prototype, '_connect')
+let botInstance = null
+let botIrcWriteStub = null
 
+const samples = require('./samples')
 const USERNAME = 'test'
 
-
-describe('emulated IO tests', function() {
-  beforeEach((done)=>{
-    myBot = new TwitchBot({
+describe('emulated IO tests', function () {
+  beforeEach((done) => {
+    botInstance = new TwitchBot({
       username: USERNAME,
       oauth: 'oauth:123abc',
-      channels: ["testchannel"]
+      channels: ['testchannel']
     })
 
-    writeStub = sinon.stub(myBot.irc, 'write')
-    connectStub.callsFake(function(){
-      this.emit('connect');
+    botIrcWriteStub = sinon.stub(botInstance.irc, 'write')
+    connectStub.callsFake(function () {
+      this.emit('connect')
     })
-    myBot.afterConnect();
-    done();
-  });
-  it ("should handle error if invalid auth", function(done) {
-
-    myBot.on('error', (err) => {
-        expect(err.message).to.equal('Login authentication failed');
-        done();
+    botInstance.afterConnect()
+    done()
+  })
+  it('should handle error if invalid auth', function (done) {
+    botInstance.on('error', (err) => {
+      expect(err.message).to.equal('Login authentication failed')
+      done()
     })
-    myBot.irc.emit("data","Login authentication failed\r\n");
+    botInstance.irc.emit('data', 'Login authentication failed\r\n')
+  })
 
-  });
-
-  it ("should handle error if improperly formatted auth", function(done) {
-
-    myBot.on('error', (err) => {
-        expect(err.message).to.equal('Improperly formatted auth');
-        done();
+  it('should handle error if improperly formatted auth', function (done) {
+    botInstance.on('error', (err) => {
+      expect(err.message).to.equal('Improperly formatted auth')
+      done()
     })
-    myBot.irc.emit("data","Improperly formatted auth\r\n");
+    botInstance.irc.emit('data', 'Improperly formatted auth\r\n')
+  })
 
-  });
-
-  it ("should handle a channel message", function(done) {
-
-    myBot.on('message', (chatter) => {
+  it('should handle a channel message', function (done) {
+    botInstance.on('message', (chatter) => {
       expect(chatter).to.eql(samples.PRIVMSG.expected)
-      done();
+      done()
     })
-    myBot.irc.emit("data",samples.PRIVMSG.raw)
+    botInstance.irc.emit('data', samples.PRIVMSG.raw)
+  })
 
-  });
-
-  it ("should handle a subscription message", function(done) {
-
-    myBot.on('subscription', (chatter) => {
+  it('should handle a subscription message', function (done) {
+    botInstance.on('subscription', (chatter) => {
       expect(chatter).to.eql(samples.USERNOTICE.subscription_expected)
-      done();
+      done()
     })
-    myBot.irc.emit("data",samples.USERNOTICE.subscription_raw)
+    botInstance.irc.emit('data', samples.USERNOTICE.subscription_raw)
+  })
 
-  });
-
-  it ("should handle a timeout message", function(done) {
-
-    myBot.on('timeout', (chatter) => {
-      expect(chatter).to.eql(samples.CLEARCHAT.timeout_expected);
-      done();
+  it('should handle a timeout message', function (done) {
+    botInstance.on('timeout', (chatter) => {
+      expect(chatter).to.eql(samples.CLEARCHAT.timeout_expected)
+      done()
     })
-    myBot.irc.emit("data",samples.CLEARCHAT.timeout_raw);
+    botInstance.irc.emit('data', samples.CLEARCHAT.timeout_raw)
+  })
 
-  });
-
-  it ("should handle a ban message", function(done) {
-
-    myBot.on('ban', (chatter) => {
-      expect(chatter).to.eql(samples.CLEARCHAT.ban_expected);
-      done();
+  it('should handle a ban message', function (done) {
+    botInstance.on('ban', (chatter) => {
+      expect(chatter).to.eql(samples.CLEARCHAT.ban_expected)
+      done()
     })
-    myBot.irc.emit("data",samples.CLEARCHAT.ban_raw);
+    botInstance.irc.emit('data', samples.CLEARCHAT.ban_raw)
+  })
 
-  });
-
-  it ("should handle a self-channel-join message", function(done) {
+  it('should handle a self-channel-join message', function (done) {
     const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel`
 
-    myBot.on('join', channel => {
-      expect(channel).to.eql("#testchannel")
-      expect(myBot.channels).to.eql(["#testchannel"])
+    botInstance.on('join', channel => {
+      expect(channel).to.eql('#testchannel')
+      expect(botInstance.channels).to.eql(['#testchannel'])
       done()
     })
-    myBot.irc.emit("data", JOIN_MESSAGE)
+    botInstance.irc.emit('data', JOIN_MESSAGE)
   })
 
-  it ("should handle a self-channel-join message with \\r\\n", function(done) {
+  it('should handle a self-channel-join message with \\r\\n', function (done) {
     const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel\r\n`
 
-    myBot.on('join', (chatter) => {
-      expect(chatter).to.eql("#testchannel")
-      expect(myBot.channels).to.eql(["#testchannel"])
+    botInstance.on('join', (chatter) => {
+      expect(chatter).to.eql('#testchannel')
+      expect(botInstance.channels).to.eql(['#testchannel'])
       done()
     })
-    myBot.irc.emit("data", JOIN_MESSAGE)
+    botInstance.irc.emit('data', JOIN_MESSAGE)
   })
 
-  it ("should handle a self-channel-part message", function(done) {
+  it('should handle a self-channel-part message', function (done) {
     const PART_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv PART #testchannel`
 
-    myBot.on('part', (chatter) => {
-      expect(chatter).to.eql("#testchannel")
-      expect(myBot.channels).to.eql([])
+    botInstance.on('part', (chatter) => {
+      expect(chatter).to.eql('#testchannel')
+      expect(botInstance.channels).to.eql([])
       done()
     })
-    myBot.channels = ["#testchannel"]
-    myBot.irc.emit("data", PART_MESSAGE)
+    botInstance.channels = ['#testchannel']
+    botInstance.irc.emit('data', PART_MESSAGE)
   })
 
-  it ("should handle a self-channel-part message with \\r\\n", function(done) {
+  it('should handle a self-channel-part message with \\r\\n', function (done) {
     const PART_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv PART #testchannel\r\n`
 
-    myBot.on('part', (chatter) => {
-      expect(chatter).to.eql("#testchannel")
-      expect(myBot.channels).to.eql([])
+    botInstance.on('part', (chatter) => {
+      expect(chatter).to.eql('#testchannel')
+      expect(botInstance.channels).to.eql([])
       done()
     })
-    myBot.channels = ["#testchannel"]
-    myBot.irc.emit("data", PART_MESSAGE)
+    botInstance.channels = ['#testchannel']
+    botInstance.irc.emit('data', PART_MESSAGE)
   })
 
-  it ("should reply to a server ping", function(done) {
-
-    writeStub.callsFake(function (data, encoding, cb) {
-      let received=writeStub.args[writeStub.callCount - 1][0];
-        expect(received).to.eql('PONG :tmi.twitch.tv\r\n');
-        done();
-    });
-    myBot.irc.emit("data",'PING :tmi.twitch.tv');
-
-  });
-
+  it('should reply to a server ping', function (done) {
+    botIrcWriteStub.callsFake(function (data, encoding, cb) {
+      let received = botIrcWriteStub.args[botIrcWriteStub.callCount - 1][0]
+      expect(received).to.eql('PONG :tmi.twitch.tv\r\n')
+      done()
+    })
+    botInstance.irc.emit('data', 'PING :tmi.twitch.tv')
+  })
 })
 
 describe('say()', () => {
-
   it('should send a message in the channel', done => {
+    botInstance.irc.emit('data', `@${botInstance.username}.tmi.twitch.tv JOIN #testchannel`)
+    botIrcWriteStub.callsFake(function (data, encoding, cb) {
+      let received = botIrcWriteStub.args[botIrcWriteStub.callCount - 1][0]
+      expect(received).to.eql(`PRIVMSG ${botInstance.channels[0]} :testmessage\r\n`)
+      done()
+    })
 
-    myBot.irc.emit('data', `@${myBot.username}.tmi.twitch.tv JOIN #testchannel`)
-    writeStub.callsFake(function (data, encoding, cb) {
-      let received=writeStub.args[writeStub.callCount - 1][0];
-        expect(received).to.eql(`PRIVMSG ${myBot.channels[0]} :testmessage\r\n`);
-        done();
-    });
-
-    myBot.say('testmessage',myBot.channels[0]);
-
-
-
+    botInstance.say('testmessage', botInstance.channels[0])
   })
   it('should fail when the message to send is over 500 characters', done => {
-      myBot.say(samples.PRIVMSG.long, myBot.channels[0], err => {
-        expect(err.sent).to.equal(false)
-        expect(err.message).to.equal('Exceeded PRIVMSG character limit (500)')
-        done()
+    botInstance.say(samples.PRIVMSG.long, botInstance.channels[0], err => {
+      expect(err.sent).to.equal(false)
+      expect(err.message).to.equal('Exceeded PRIVMSG character limit (500)')
+      done()
     })
   })
 })
 
 describe('join()', () => {
-
   it('should send properly formatted message to join a channel without a leading hashtag', done => {
-    writeStub.callsFake(function (data, encoding, cb) {
-      let received=writeStub.args[writeStub.callCount - 1][0];
-        expect(received).to.eql(`JOIN #testchannel\r\n`);
-        done();
-    });
-    myBot.join('testchannel');
-
+    botIrcWriteStub.callsFake(function (data, encoding, cb) {
+      let received = botIrcWriteStub.args[botIrcWriteStub.callCount - 1][0]
+      expect(received).to.eql(`JOIN #testchannel\r\n`)
+      done()
+    })
+    botInstance.join('testchannel')
   })
 
   it('should send properly formatted message to join a channel with a leading hashtag', done => {
-    writeStub.callsFake(function (data, encoding, cb) {
-      let received=writeStub.args[writeStub.callCount - 1][0];
-        expect(received).to.eql(`JOIN #testchannel\r\n`);
-        done();
-    });
-    myBot.join('#testchannel');
-
+    botIrcWriteStub.callsFake(function (data, encoding, cb) {
+      let received = botIrcWriteStub.args[botIrcWriteStub.callCount - 1][0]
+      expect(received).to.eql(`JOIN #testchannel\r\n`)
+      done()
+    })
+    botInstance.join('#testchannel')
   })
 })
 
 describe('part()', () => {
-
   it('should send properly formatted message to part from a channel without a leading hashtag', done => {
-    writeStub.callsFake(function (data, encoding, cb) {
-      let received=writeStub.args[writeStub.callCount - 1][0];
-        expect(received).to.eql(`PART #testchannel\r\n`);
-        done();
-    });
-    myBot.part('testchannel');
-
+    botIrcWriteStub.callsFake(function (data, encoding, cb) {
+      let received = botIrcWriteStub.args[botIrcWriteStub.callCount - 1][0]
+      expect(received).to.eql(`PART #testchannel\r\n`)
+      done()
+    })
+    botInstance.part('testchannel')
   })
 
   it('should send properly formatted message to part from a channel with a leading hashtag', done => {
-    writeStub.callsFake(function (data, encoding, cb) {
-      let received=writeStub.args[writeStub.callCount - 1][0];
-        expect(received).to.eql(`PART #testchannel\r\n`);
-        done();
-    });
-    myBot.part('#testchannel');
-
+    botIrcWriteStub.callsFake(function (data, encoding, cb) {
+      let received = botIrcWriteStub.args[botIrcWriteStub.callCount - 1][0]
+      expect(received).to.eql(`PART #testchannel\r\n`)
+      done()
+    })
+    botInstance.part('#testchannel')
   })
 })
