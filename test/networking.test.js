@@ -6,13 +6,14 @@ const {expect} = require('chai')
 const connectStub = TwitchBot.prototype._connect.displayName === '_connect'
   ? TwitchBot.prototype._connect
   : sinon.stub(TwitchBot.prototype, '_connect')
+
 let botInstance = null
 let botIrcWriteStub = null
 
 const samples = require('./samples')
 const USERNAME = 'test'
 
-describe('emulated IO tests', function () {
+describe('Network Emulated IO testing', function () {
   beforeEach((done) => {
     botInstance = new TwitchBot({
       username: USERNAME,
