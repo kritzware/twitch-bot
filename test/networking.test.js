@@ -81,7 +81,7 @@ describe('Network Emulated IO testing', function () {
 
     botInstance.on('join', channel => {
       expect(channel).to.eql('#testchannel')
-      expect(botInstance.channels).to.eql(['#testchannel'])
+      expect(botInstance.channels()).to.eql(['#testchannel'])
       done()
     })
     botInstance.irc.emit('data', JOIN_MESSAGE)
@@ -92,7 +92,7 @@ describe('Network Emulated IO testing', function () {
 
     botInstance.on('join', (chatter) => {
       expect(chatter).to.eql('#testchannel')
-      expect(botInstance.channels).to.eql(['#testchannel'])
+      expect(botInstance.channels()).to.eql(['#testchannel'])
       done()
     })
     botInstance.irc.emit('data', JOIN_MESSAGE)
@@ -100,25 +100,27 @@ describe('Network Emulated IO testing', function () {
 
   it('should handle a self-channel-part message', function (done) {
     const PART_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv PART #testchannel`
+    const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel`
 
     botInstance.on('part', (chatter) => {
       expect(chatter).to.eql('#testchannel')
-      expect(botInstance.channels).to.eql([])
+      expect(botInstance.channels()).to.eql([])
       done()
     })
-    botInstance.channels = ['#testchannel']
+    botInstance.irc.emit('data', JOIN_MESSAGE)
     botInstance.irc.emit('data', PART_MESSAGE)
   })
 
   it('should handle a self-channel-part message with \\r\\n', function (done) {
     const PART_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv PART #testchannel\r\n`
+    const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel`
 
     botInstance.on('part', (chatter) => {
       expect(chatter).to.eql('#testchannel')
-      expect(botInstance.channels).to.eql([])
+      expect(botInstance.channels()).to.eql([])
       done()
     })
-    botInstance.channels = ['#testchannel']
+    botInstance.irc.emit('data', JOIN_MESSAGE)
     botInstance.irc.emit('data', PART_MESSAGE)
   })
 
@@ -137,16 +139,28 @@ describe('say()', () => {
     botInstance.irc.emit('data', `@${botInstance.username}.tmi.twitch.tv JOIN #testchannel`)
     botIrcWriteStub.callsFake(function (data, encoding, cb) {
       let received = botIrcWriteStub.args[botIrcWriteStub.callCount - 1][0]
-      expect(received).to.eql(`PRIVMSG ${botInstance.channels[0]} :testmessage\r\n`)
+      expect(received).to.eql(`PRIVMSG ${botInstance.channels()[0]} :testmessage\r\n`)
       done()
     })
 
-    botInstance.say('testmessage', botInstance.channels[0])
+    botInstance.say('testmessage', botInstance.channels()[0])
   })
   it('should fail when the message to send is over 500 characters', done => {
-    botInstance.say(samples.PRIVMSG.long, botInstance.channels[0], err => {
+    const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel`
+    botInstance.irc.emit('data', JOIN_MESSAGE)
+    botInstance.say(samples.PRIVMSG.long, botInstance.channels()[0], err => {
       expect(err.sent).to.equal(false)
       expect(err.message).to.equal('Exceeded PRIVMSG character limit (500)')
+      done()
+    })
+  })
+
+  it('should fail if the bot is not part of the target channel', done => {
+    const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel`
+    botInstance.irc.emit('data', JOIN_MESSAGE)
+    botInstance.say(samples.PRIVMSG.long, '#somechannel', err => {
+      expect(err.sent).to.equal(false)
+      expect(err.message).to.equal('You do not seem to be part of this channel: #somechannel')
       done()
     })
   })

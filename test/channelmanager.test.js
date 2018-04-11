@@ -6,7 +6,7 @@ const ChannelManager = require('../lib/channelManager.js')
 let channelManagerInstance = null
 let sendMessageStub = null
 
-describe('emulated IO tests', function () {
+describe('channelManager unit tests', function () {
   beforeEach((done) => {
     sendMessageStub = sinon.stub()
     channelManagerInstance = new ChannelManager(sendMessageStub)
@@ -51,9 +51,9 @@ describe('emulated IO tests', function () {
     expect(channelManagerInstance.channels()).to.have.members(['#testchannel2'])
   })
 
-  it('does not fail if .part() is called with a non existing channel name', () => {
+  it('does not fail if .part() is called with a non existing channel name and returns false', () => {
     channelManagerInstance.join('#testchannel')
-    channelManagerInstance.part('#testchannel123')
+    expect(channelManagerInstance.part('#testchannel123')).to.equal(false)
 
     expect(channelManagerInstance.channels()).to.have.members(['#testchannel'])
   })
