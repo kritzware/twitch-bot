@@ -1,3 +1,4 @@
+/* global describe it beforeEach */
 const sinon = require('sinon')
 
 const TwitchBot = require('../index')
@@ -149,7 +150,7 @@ describe('say()', () => {
     const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel`
     botInstance.irc.emit('data', JOIN_MESSAGE)
     botInstance.say(samples.PRIVMSG.long, botInstance.channels()[0], err => {
-      expect(err.sent).to.equal(false)
+      expect(err).to.be.an('error')
       expect(err.message).to.equal('Exceeded PRIVMSG character limit (500)')
       done()
     })
@@ -159,7 +160,7 @@ describe('say()', () => {
     const JOIN_MESSAGE = `:${USERNAME}!${USERNAME}@${USERNAME}.tmi.twitch.tv JOIN #testchannel`
     botInstance.irc.emit('data', JOIN_MESSAGE)
     botInstance.say(samples.PRIVMSG.long, '#somechannel', err => {
-      expect(err.sent).to.equal(false)
+      expect(err).to.be.an('error')
       expect(err.message).to.equal('You do not seem to be part of this channel: #somechannel')
       done()
     })

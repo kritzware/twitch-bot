@@ -1,4 +1,4 @@
-const assert = require('assert')
+/* global describe it */
 const {expect} = require('chai')
 
 const samples = require('./samples')

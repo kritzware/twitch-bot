@@ -1,3 +1,4 @@
+/* global describe it beforeEach */
 const sinon = require('sinon')
 const expect = require('chai').expect
 
@@ -17,7 +18,6 @@ describe('channelManager unit tests', function () {
     try {
       const instance = new ChannelManager()
     } catch (e) {
-      console.log(e.message)
       expect(e.message).to.equal('sendMessageFunc parameter not a function.')
     }
   })
