@@ -1,11 +1,10 @@
-const assert = require('assert')
-const expect = require('chai').expect
+/* global describe it */
+const {expect} = require('chai')
 
 const samples = require('./samples')
 const parser = require('../lib/parser')
 
 describe('parser', () => {
-
   describe('formatTagName', () => {
     it('should convert irc tag names to use underscores', () => {
       expect(parser.formatTagName('user-id')).to.equal('user_id')
@@ -63,7 +62,7 @@ describe('parser', () => {
 
   describe('formatJOIN()', () => {
     it('should format a tag-string', () => {
-      const event = ':<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel';
+      const event = ':<user>!<user>@<user>.tmi.twitch.tv JOIN #testchannel'
       const parsed = parser.formatJOIN(event)
       expect(parsed).to.eql('#testchannel')
     })
@@ -71,7 +70,7 @@ describe('parser', () => {
 
   describe('formatPART()', () => {
     it('should format a tag-string', () => {
-      const event = ':<user>!<user>@<user>.tmi.twitch.tv PART #testchannel';
+      const event = ':<user>!<user>@<user>.tmi.twitch.tv PART #testchannel'
       const parsed = parser.formatPART(event)
       expect(parsed).to.eql('#testchannel')
     })
@@ -102,5 +101,4 @@ describe('parser', () => {
       expect(parsed).to.eql('#somechannel')
     })
   })
-
 })
