@@ -253,25 +253,18 @@ Bot.on('part', channel => {
 Bot.part('channel2')
 ```
 
-### `say(message: String, channel: []Channel, err: Callback)`
-Send a message in the currently connected Twitch channel. `channels` parameter not needed when connected to a single channel. An optional callback is provided for validating if the message was sent correctly.
+### `say(message: String, channel: String, err: function)`
+Send a message in a specific channel. Bot has to be part of the channel and membership must have been acknowledged by the server.
+Callback function is mandatory and will only be called in case of an error. If no callback is provided and an error occurs, no message will be sent and the bot continues operating.
 
 #### Example
 ```javascript
-Bot.say('This is a message')
-
-Bot.say('Pretend this message is over 500 characters', err => {
-  sent: false,
-  message: 'Exceeded PRIVMSG character limit (500)'
-  ts: '2017-08-13T16:38:54.989Z'
-})
-
-// If connected to multiple channels
-Bot.say('message to #channel1', 'channel1')
-Bot.say('message to #channel2', 'channel2')
+Bot.say('This is a message', '#channel1')
+Bot.say('Pretend this message is over 500 characters','#channel1', err => console.log(err.message))
+//logs: Exceeded PRIVMSG character limit (500)
 ```
 
-### `timeout(username: String, channel: []Channel, duration: int, reason: String)`
+### `timeout(username: String, channel: String, duration: int, reason: String)`
 Timeout a user from the chat. `channels` parameter not needed when connected to a single channel. Default `duration` is 600 seconds. Optional `reason` message.
 
 #### Example
@@ -312,15 +305,6 @@ Bot.close()
 ```
 
 ## Running Tests
-Running the test suite requires at least two twitch accounts, one moderator account and one normal account. The channel used must be the same - This is so timeout/ban methods can be tested with the mod account. Using these two accounts, set the following environment variables:
-```javascript
-TWITCHBOT_USERNAME=mod_username
-TWITCHBOT_OAUTH=oauth:mod-oauth-token
-TWITCHBOT_CHANNEL=mod_channel
-TWITCHBOT_USERNAME_NON_MOD=non_mod_username
-TWITCHBOT_OAUTH_NON_MOD=oauth:non-mod-oauth-token
-TWITCHBOT_CHANNEL_NON_MOD=mod_channel
-```
 To run the tests (powered with [Mocha](https://mochajs.org/)), use the following command:
 ```bash
 yarn test
