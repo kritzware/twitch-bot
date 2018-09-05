@@ -1,1 +1,1 @@
-module.exports = require('./lib/bot')
+module.exports = require('./build/bot')
