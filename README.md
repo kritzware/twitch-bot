@@ -1,4 +1,4 @@
-## ![](https://raw.githubusercontent.com/kritzware/twitch-bot/v2.0.0/example.png)
+![](https://raw.githubusercontent.com/kritzware/twitch-bot/v2.0.0/example.png)
 
 # Twitch Bot · [![NPM version](https://img.shields.io/npm/v/twitch-bot.svg)](https://www.npmjs.org/package/twitch-bot) ![](https://img.shields.io/npm/dm/twitch-bot.svg) [![CircleCI](https://circleci.com/gh/kritzware/twitch-bot.svg?style=shield&circle-token=3d338af28058e84dde13bee88751a50f55aefab3)](https://circleci.com/gh/kritzware/twitch-bot)
 

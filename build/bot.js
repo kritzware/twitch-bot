@@ -7,9 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 const events_1 = require("events");
-const net_1 = require("net");
+const irc_1 = __importDefault(require("./irc"));
 const types_1 = require("./types");
+const parser_1 = require("./parser");
 const HOST = 'irc.chat.twitch.tv';
 const PORT = 6667;
 class TwitchBot extends events_1.EventEmitter {
@@ -22,18 +26,11 @@ class TwitchBot extends events_1.EventEmitter {
             argError('Expected oauth token for bot account');
         }
         this.options = options;
-        this.socket = new net_1.Socket();
+        this.client = new irc_1.default(HOST, PORT);
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield new Promise(resolve => {
-                this.socket.setEncoding('utf8');
-                this.socket.on('ready', () => resolve());
-                this.socket.connect({
-                    host: HOST,
-                    port: PORT,
-                });
-            });
+            yield this.client.connect();
             this.listen();
         });
     }
@@ -48,7 +45,7 @@ class TwitchBot extends events_1.EventEmitter {
             }
         }
         if (!this.options.mute) {
-            this.write(`PRIVMSG ${channelName} :${message}`);
+            this.client.write(`PRIVMSG ${channelName} :${message}`);
         }
     }
     setRoomMode(mode) {
@@ -57,24 +54,43 @@ class TwitchBot extends events_1.EventEmitter {
         }
         this.say(`/${mode}`);
     }
+    getModerators() {
+        this.client.once((data) => {
+            console.log(1, data);
+        });
+        this.say('/mods');
+        return [];
+    }
     listen() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.sendCredentials();
-            this.socket.on('data', (data) => {
-                if (data.match(/tmi.twitch.tv PRIVMSG #(.*) :/)) {
-                    console.log('MESSAGE!', data);
-                }
-                console.log(data);
-            });
+        this.sendCredentials();
+        this.client.listen((data) => {
+            this.lastChunk = data;
+            try {
+                const event = getEvent(data);
+                this.parse(event, data);
+            }
+            catch (err) {
+                console.error('Failed parsing chunk:\n', JSON.stringify(data));
+            }
         });
     }
+    parse(event, data) {
+        switch (event) {
+            case 'PRIVMSG':
+                const message = parser_1.formatPrivMsg(data);
+                this.emit('message', message);
+                break;
+            default:
+                console.log(`No parse handler for event "${event}":\n --> ${JSON.stringify(data)}\n`);
+        }
+    }
     sendCredentials() {
-        this.write(`PASS ${this.options.oauth}`);
-        this.write(`NICK ${this.options.username}`);
+        this.client.write(`PASS ${this.options.oauth}`);
+        this.client.write(`NICK ${this.options.username}`);
         this.joinChannels();
-        this.write('CAP REQ :twitch.tv/tags');
-        this.write('CAP REQ :twitch.tv/membership');
-        this.write('CAP REQ :twitch.tv/commands');
+        this.client.write('CAP REQ :twitch.tv/tags');
+        this.client.write('CAP REQ :twitch.tv/membership');
+        this.client.write('CAP REQ :twitch.tv/commands');
     }
     joinChannels() {
         for (const channel of this.options.channels) {
@@ -82,13 +98,19 @@ class TwitchBot extends events_1.EventEmitter {
         }
     }
     join(channelName) {
-        this.write(`JOIN ${channelName}`);
-    }
-    write(message) {
-        this.socket.write(`${message}\r\n`);
+        this.client.write(`JOIN ${channelName}`);
     }
 }
 function argError(message) {
     throw new Error(message);
+}
+function getEvent(data) {
+    const isCommand = /(?<=tmi.twitch.tv|jtv) ([0-9]|[A-Z])\w+/;
+    const matches = data.match(isCommand);
+    const match = matches[0].trim();
+    if (!isNaN(match)) {
+        return +match;
+    }
+    return match;
 }
 module.exports = TwitchBot;

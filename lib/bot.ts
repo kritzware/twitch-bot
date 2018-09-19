@@ -1,5 +1,7 @@
 import { EventEmitter } from 'events'
-import { Socket } from 'net'
+
+/* IRC */
+import IRC from './irc'
 
 /* Types + Interfaces */
 import { Channel, Chunk, Message, RoomModerationCommand } from './types'
@@ -19,7 +21,9 @@ const PORT = 6667
  */
 class TwitchBot extends EventEmitter {
   private options: Options
-  private socket: Socket
+  private client: IRC
+
+  private lastChunk: Chunk | undefined
 
   constructor(options: Options) {
     super()
@@ -34,7 +38,7 @@ class TwitchBot extends EventEmitter {
 
     /* Set default options */
     this.options = options
-    this.socket = new Socket()
+    this.client = new IRC(HOST, PORT)
   }
 
   /**
@@ -44,14 +48,7 @@ class TwitchBot extends EventEmitter {
    * @description Creates a Socket connection with Twitch IRC
    */
   public async connect(): Promise<void> {
-    await new Promise(resolve => {
-      this.socket.setEncoding('utf8')
-      this.socket.on('ready', () => resolve())
-      this.socket.connect({
-        host: HOST,
-        port: PORT,
-      })
-    })
+    await this.client.connect()
     this.listen()
   }
 
@@ -72,7 +69,7 @@ class TwitchBot extends EventEmitter {
       }
     }
     if (!this.options.mute) {
-      this.write(`PRIVMSG ${channelName} :${message}`)
+      this.client.write(`PRIVMSG ${channelName} :${message}`)
     }
   }
 
@@ -90,38 +87,57 @@ class TwitchBot extends EventEmitter {
     this.say(`/${mode}`)
   }
 
+  public getModerators(): string[] {
+    this.client.once((data: Chunk) => {
+      console.log(1, data)
+    })
+    this.say('/mods')
+    return []
+  }
+
   /**
    * @name listen
    * @private
    * @method
    * @description Activates event listeners upon successfully connecting to the IRC server
    */
-  private async listen() {
+  private listen() {
     this.sendCredentials()
-
-    this.socket.on('data', (data: Chunk) => {
-      // PRIVMSG
-      if (data.match(/tmi.twitch.tv PRIVMSG #(.*) :/)) {
-        console.log('MESSAGE!', data)
+    this.client.listen((data: Chunk) => {
+      this.lastChunk = data
+      try {
+        const event = getEvent(data)
+        this.parse(event, data)
+      } catch (err) {
+        console.error('Failed parsing chunk:\n', JSON.stringify(data))
       }
-
-      console.log(data)
     })
-    // // // this.socket.on('close', has_error => {
-    // // //     console.log({ has_error })
-    // // // })
-    // // this.socket.on('end', () => {
-    // //     console.log('end')
-    // // })
+  }
+
+  /**
+   * @name parse
+   * @private
+   * @method
+   * @description Calls the corresponding parse method for the specified event
+   */
+  private parse(event: string, data: Chunk) {
+    switch (event) {
+      case 'PRIVMSG':
+        const message = formatPrivMsg(data)
+        this.emit('message', message)
+        break
+      default:
+        console.log(`No parse handler for event "${event}":\n --> ${JSON.stringify(data)}\n`)
+    }
   }
 
   private sendCredentials() {
-    this.write(`PASS ${this.options.oauth}`)
-    this.write(`NICK ${this.options.username}`)
+    this.client.write(`PASS ${this.options.oauth}`)
+    this.client.write(`NICK ${this.options.username}`)
     this.joinChannels()
-    this.write('CAP REQ :twitch.tv/tags')
-    this.write('CAP REQ :twitch.tv/membership')
-    this.write('CAP REQ :twitch.tv/commands')
+    this.client.write('CAP REQ :twitch.tv/tags')
+    this.client.write('CAP REQ :twitch.tv/membership')
+    this.client.write('CAP REQ :twitch.tv/commands')
   }
 
   private joinChannels() {
@@ -131,16 +147,22 @@ class TwitchBot extends EventEmitter {
   }
 
   private join(channelName: string) {
-    this.write(`JOIN ${channelName}`)
-  }
-
-  private write(message: string) {
-    this.socket.write(`${message}\r\n`)
+    this.client.write(`JOIN ${channelName}`)
   }
 }
 
 function argError(message: string) {
   throw new Error(message)
+}
+
+function getEvent(data: Chunk) {
+  const isCommand: RegExp = /(?<=tmi.twitch.tv|jtv) ([0-9]|[A-Z])\w+/
+  const matches: RegExpMatchArray | null = data.match(isCommand)
+  const match = (<any>matches)[0].trim()
+  if (!isNaN(match)) {
+    return +match
+  }
+  return match
 }
 
 export = TwitchBot
