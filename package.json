@@ -1,41 +1,45 @@
 {
-    "name": "twitch-bot",
-    "version": "2.0.0",
-    "description": "Easily create chat bots for Twitch.tv",
-    "main": "index.js",
-    "scripts": {
-        "teststub": "mocha test/socketstub.js",
-        "ts": "tsc -w",
-        "test": "mocha --require ts-node/register test/**/*.spec.ts"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/kritzware/twitch-bot.git"
-    },
-    "keywords": [
-        "twitchbot",
-        "twitch",
-        "chatbot",
-        "bot",
-        "twitch chatbot",
-        "twitch bot"
-    ],
-    "author": "kritzware <suspiciouspotato@gmail.com>",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/kritzware/twitch-bot/issues"
-    },
-    "homepage": "https://github.com/kritzware/twitch-bot#readme",
-    "devDependencies": {
-        "@types/chai": "^4.1.4",
-        "@types/mocha": "^5.2.5",
-        "@types/node": "^10.9.4",
-        "chai": "^4.1.0",
-        "mocha": "^3.4.2",
-        "should": "^13.1.3",
-        "sinon": "^4.1.3",
-        "ts-node": "^7.0.1",
-        "typescript": "^3.0.3"
-    },
-    "dependencies": {}
+  "name": "twitch-bot",
+  "version": "2.0.0",
+  "description": "Easily create chat bots for Twitch.tv",
+  "main": "index.js",
+  "scripts": {
+    "teststub": "mocha test/socketstub.js",
+    "ts": "tsc -w",
+    "test": "mocha --require ts-node/register test/**/*.spec.ts",
+    "lint": "prettier --config ./.prettierrc.js --write lib/**/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kritzware/twitch-bot.git"
+  },
+  "keywords": [
+    "twitchbot",
+    "twitch",
+    "chatbot",
+    "bot",
+    "twitch chatbot",
+    "twitch bot"
+  ],
+  "author": "kritzware <suspiciouspotato@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kritzware/twitch-bot/issues"
+  },
+  "homepage": "https://github.com/kritzware/twitch-bot#readme",
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.9.4",
+    "chai": "^4.1.0",
+    "eslint": "^5.6.0",
+    "mocha": "^3.4.2",
+    "prettier": "^1.14.3",
+    "should": "^13.1.3",
+    "sinon": "^4.1.3",
+    "ts-node": "^7.0.1",
+    "typedoc": "^0.12.0",
+    "typescript": "^3.0.3"
+  },
+  "dependencies": {}
 }

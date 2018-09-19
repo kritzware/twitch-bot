@@ -9,17 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const events_1 = require("events");
 const net_1 = require("net");
-const types_1 = require("./types");
 const HOST = 'irc.chat.twitch.tv';
 const PORT = 6667;
 class TwitchBot extends events_1.EventEmitter {
     constructor(options) {
         super();
         if (!options.username) {
-            argError('Expected username for bot account');
+            argError('Missing required username for bot account');
         }
         if (!options.oauth) {
-            argError('Expected oauth token for bot account');
+            argError('Expected oauth token for bot account e.g. ');
         }
         this.options = options;
         this.socket = new net_1.Socket();
@@ -37,25 +36,13 @@ class TwitchBot extends events_1.EventEmitter {
             this.listen();
         });
     }
-    say(message, options) {
-        let channelName = this.options.channels[0];
-        if (options) {
-            if (options.channel) {
-                channelName = options.channel;
-            }
-            if (options.colored) {
-                message = `/me ${message}`;
-            }
+    say(message, channelName) {
+        if (!channelName) {
+            channelName = this.options.channels[0];
         }
         if (!this.options.mute) {
             this.write(`PRIVMSG ${channelName} :${message}`);
         }
-    }
-    setRoomMode(mode) {
-        if (!mode) {
-            argError(`Expected "mode" to be one of ${Object.keys(types_1.RoomModerationCommand)}`);
-        }
-        this.say(`/${mode}`);
     }
     listen() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -64,7 +51,6 @@ class TwitchBot extends events_1.EventEmitter {
                 if (data.match(/tmi.twitch.tv PRIVMSG #(.*) :/)) {
                     console.log('MESSAGE!', data);
                 }
-                console.log(data);
             });
         });
     }

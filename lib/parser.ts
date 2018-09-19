@@ -7,20 +7,20 @@ const NUMBER_KEYS = { roomId: 1, tmiSentTs: 1, userId: 1, bits: 1 }
  * @interface
  */
 export interface PrivMsg {
-    badges?: Badges
-    bits?: number
-    color: string
-    displayName: string
-    id: string
-    emotes?: string //[]
-    mod: boolean
-    roomId: number
-    subscriber: boolean
-    tmiSentTs: number
-    turbo: boolean
-    userId: number
-    channel: string
-    message: string
+  badges?: Badges
+  bits?: number
+  color: string
+  displayName: string
+  id: string
+  emotes?: string //[]
+  mod: boolean
+  roomId: number
+  subscriber: boolean
+  tmiSentTs: number
+  turbo: boolean
+  userId: number
+  channel: string
+  message: string
 }
 
 /**
@@ -28,15 +28,15 @@ export interface PrivMsg {
  * @interface
  */
 export interface Badges {
-    admin?: number
-    bits?: number
-    broadcaster?: number
-    globalMod?: number
-    moderator?: number
-    subscriber?: number
-    staff?: number
-    turbo?: number
-    premium?: number
+  admin?: number
+  bits?: number
+  broadcaster?: number
+  globalMod?: number
+  moderator?: number
+  subscriber?: number
+  staff?: number
+  turbo?: number
+  premium?: number
 }
 
 /**
@@ -46,53 +46,53 @@ export interface Badges {
  * @description Converts PRIVMSG string to an object
  */
 export function formatPrivMsg(chunk: string): PrivMsg {
-    const message = <PrivMsg>{}
-    let rawMessage: string = ''
+  const message = <PrivMsg>{}
+  let rawMessage: string = ''
 
-    for (const attribute of chunk.split(';')) {
-        let [key, value] = attribute.split('=')
-        if (key.includes('@')) {
-            key = key.split('@')[1]
-        }
-        const camelCaseKey = toCamelCase(key)
-        let normalisedValue: boolean | string | number = value
+  for (const attribute of chunk.split(';')) {
+    let [key, value] = attribute.split('=')
+    if (key.includes('@')) {
+      key = key.split('@')[1]
+    }
+    const camelCaseKey = toCamelCase(key)
+    let normalisedValue: boolean | string | number = value
 
-        /* Convert types */
-        if (BOOL_KEYS.hasOwnProperty(camelCaseKey)) {
-            normalisedValue = !!+value
-        }
-        if (NUMBER_KEYS.hasOwnProperty(camelCaseKey)) {
-            normalisedValue = +value
-        }
-
-        /* Badges */
-        if (camelCaseKey === 'badges' && normalisedValue) {
-            const badges = formatBadges(normalisedValue as string)
-            ;(message as any)[camelCaseKey] = badges
-            continue
-        }
-
-        if (camelCaseKey !== 'userType') {
-            ;(message as any)[camelCaseKey] = normalisedValue
-        } else {
-            rawMessage = <string>normalisedValue
-        }
+    /* Convert types */
+    if (BOOL_KEYS.hasOwnProperty(camelCaseKey)) {
+      normalisedValue = !!+value
+    }
+    if (NUMBER_KEYS.hasOwnProperty(camelCaseKey)) {
+      normalisedValue = +value
     }
 
-    const messageContents = rawMessage.split('PRIVMSG #')[1]
-    const splitMessage = messageContents.split(' :')
-    message.channel = splitMessage[0]
-    message.message = splitMessage[1].trim()
-
-    const colouredMessageParts = message.message.includes('ACTION')
-        ? message.message.split('ACTION')
-        : []
-
-    if (colouredMessageParts && colouredMessageParts.length > 0) {
-        colouredMessageParts.shift()
-        message.message = `/me${colouredMessageParts.join('ACTION').replace('\u0001', '')}`
+    /* Badges */
+    if (camelCaseKey === 'badges' && normalisedValue) {
+      const badges = formatBadges(normalisedValue as string)
+      ;(message as any)[camelCaseKey] = badges
+      continue
     }
-    return message
+
+    if (camelCaseKey !== 'userType') {
+      ;(message as any)[camelCaseKey] = normalisedValue
+    } else {
+      rawMessage = <string>normalisedValue
+    }
+  }
+
+  const messageContents = rawMessage.split('PRIVMSG #')[1]
+  const splitMessage = messageContents.split(' :')
+  message.channel = splitMessage[0]
+  message.message = splitMessage[1].trim()
+
+  const colouredMessageParts = message.message.includes('ACTION')
+    ? message.message.split('ACTION')
+    : []
+
+  if (colouredMessageParts && colouredMessageParts.length > 0) {
+    colouredMessageParts.shift()
+    message.message = `/me${colouredMessageParts.join('ACTION').replace('\u0001', '')}`
+  }
+  return message
 }
 
 /**
@@ -100,13 +100,13 @@ export function formatPrivMsg(chunk: string): PrivMsg {
  * @param badgeTags
  */
 function formatBadges(badgeTags: string): Badges {
-    const badges = badgeTags.split(',')
-    const formattedBadges = <Badges>{}
-    for (const badge of badges) {
-        const [type, value] = badge.split('/')
-        ;(<any>formattedBadges)[snakeToCamel(type)] = +value
-    }
-    return formattedBadges
+  const badges = badgeTags.split(',')
+  const formattedBadges = <Badges>{}
+  for (const badge of badges) {
+    const [type, value] = badge.split('/')
+    ;(<any>formattedBadges)[snakeToCamel(type)] = +value
+  }
+  return formattedBadges
 }
 
 /**
@@ -115,9 +115,9 @@ function formatBadges(badgeTags: string): Badges {
  * @description Converts kebab case to camel case
  */
 function toCamelCase(str: string) {
-    return str.replace(/-([a-z])/g, g => {
-        return g[1].toUpperCase()
-    })
+  return str.replace(/-([a-z])/g, g => {
+    return g[1].toUpperCase()
+  })
 }
 
 /**
@@ -126,7 +126,7 @@ function toCamelCase(str: string) {
  * @description Converts lower snake case to camel case
  */
 function snakeToCamel(str: string) {
-    return str.replace(/(_\w)/g, m => {
-        return m[1].toUpperCase()
-    })
+  return str.replace(/(_\w)/g, m => {
+    return m[1].toUpperCase()
+  })
 }
