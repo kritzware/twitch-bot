@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const net_1 = require("net");
 class IRC {
     constructor(host, port) {
+        this.listenForChunk = false;
         this.host = host;
         this.port = port;
         this.socket = new net_1.Socket();
@@ -27,20 +28,33 @@ class IRC {
             });
         });
     }
-    write(message) {
-        this.socket.write(`${message}\r\n`);
+    write(message, callback) {
+        this.socket.write(`${message}\r\n`, callback);
+    }
+    writeWithResponse(message) {
+        return new Promise(resolve => {
+            this.write(message, () => {
+                this.listenForChunk = true;
+                const checkForNewChunk = setInterval(() => {
+                    if (!this.listenForChunk) {
+                        clearInterval(checkForNewChunk);
+                        resolve(this.lastChunk);
+                    }
+                }, 10);
+            });
+        });
     }
     listen(callback) {
         this.socket.on('data', (chunk) => {
-            const lines = chunk.split('\n:');
+            const lines = chunk.split('\r\n');
+            console.log(lines);
             for (const line of lines) {
+                if (this.listenForChunk) {
+                    this.lastChunk = line;
+                    this.listenForChunk = false;
+                }
                 callback(line);
             }
-        });
-    }
-    once(callback) {
-        this.socket.once('data', (chunk) => {
-            callback(chunk);
         });
     }
 }

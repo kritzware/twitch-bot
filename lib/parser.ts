@@ -1,3 +1,5 @@
+import { Chunk, Channel } from './types'
+
 /** @constant */
 const BOOL_KEYS = { mod: 1, subscriber: 1, turbo: 1 }
 const NUMBER_KEYS = { roomId: 1, tmiSentTs: 1, userId: 1, bits: 1 }
@@ -42,10 +44,9 @@ export interface Badges {
 /**
  * @name formatPrivMsg
  * @function
- * @param {String} chunk PRIVMSG event string
  * @description Converts PRIVMSG string to an object
  */
-export function formatPrivMsg(chunk: string): PrivMsg {
+export function formatPrivMsg(chunk: Chunk): PrivMsg {
   const message = <PrivMsg>{}
   let rawMessage: string = ''
 
@@ -93,6 +94,15 @@ export function formatPrivMsg(chunk: string): PrivMsg {
     message.message = `/me${colouredMessageParts.join('ACTION').replace('\u0001', '')}`
   }
   return message
+}
+
+/**
+ * @name formatJoin
+ * @function
+ * @description Gets the channel from a JOIN event
+ */
+export function formatJoin(chunk: Chunk): Channel {
+  return chunk.split(`JOIN `)[1].trim()
 }
 
 /**

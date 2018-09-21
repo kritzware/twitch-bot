@@ -12,21 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const events_1 = require("events");
 const irc_1 = __importDefault(require("./irc"));
+const channelManager_1 = __importDefault(require("./channelManager"));
 const types_1 = require("./types");
 const parser_1 = require("./parser");
+const utils_1 = require("./utils");
 const HOST = 'irc.chat.twitch.tv';
 const PORT = 6667;
 class TwitchBot extends events_1.EventEmitter {
     constructor(options) {
         super();
         if (!options.username) {
-            argError('Expected username for bot account');
+            utils_1.argError('Expected "username" in TwitchBot constructor');
         }
         if (!options.oauth) {
-            argError('Expected oauth token for bot account');
+            utils_1.argError('Expected "oauth" in TwitchBot constructor');
         }
         this.options = options;
         this.client = new irc_1.default(HOST, PORT);
+        this.channelManager = new channelManager_1.default(this.options.channels, this.client);
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -35,50 +38,63 @@ class TwitchBot extends events_1.EventEmitter {
         });
     }
     say(message, options) {
-        let channelName = this.options.channels[0];
+        let channelToSend = this.channelManager.default();
+        const multiChannel = this.channelManager.count() > 1;
+        if (!options && multiChannel) {
+            utils_1.argError(`Must specify options.channel in say() when connected to multiple channels`);
+        }
         if (options) {
-            if (options.channel) {
-                channelName = options.channel;
+            const { channel, coloured } = options;
+            if (multiChannel && !channel) {
+                utils_1.argError(`Must specify options.channel in say() when connected to multiple channels`);
             }
-            if (options.colored) {
+            if (multiChannel && channel && this.channelManager.checkExists(channel)) {
+                channelToSend = channel;
+            }
+            if (coloured) {
                 message = `/me ${message}`;
             }
         }
         if (!this.options.mute) {
-            this.client.write(`PRIVMSG ${channelName} :${message}`);
+            this.client.write(`PRIVMSG ${channelToSend} :${message}`);
         }
     }
-    setRoomMode(mode) {
+    setRoomMode(mode, options) {
         if (!mode) {
-            argError(`Expected "mode" to be one of ${Object.keys(types_1.RoomModerationCommand)}`);
+            utils_1.argError(`Expected "mode" to be one of ${Object.keys(types_1.RoomModerationCommand)}`);
         }
-        this.say(`/${mode}`);
+        this.say(`/${mode}`, options ? options : undefined);
     }
     getModerators() {
-        this.client.once((data) => {
-            console.log(1, data);
+        return __awaiter(this, void 0, void 0, function* () {
+            return [];
         });
-        this.say('/mods');
-        return [];
     }
     listen() {
-        this.sendCredentials();
         this.client.listen((data) => {
-            this.lastChunk = data;
             try {
-                const event = getEvent(data);
+                const event = utils_1.getEvent(data);
                 this.parse(event, data);
             }
             catch (err) {
                 console.error('Failed parsing chunk:\n', JSON.stringify(data));
             }
         });
+        this.sendCredentials();
     }
     parse(event, data) {
         switch (event) {
             case 'PRIVMSG':
                 const message = parser_1.formatPrivMsg(data);
                 this.emit('message', message);
+                break;
+            case 'JOIN':
+                const channel = parser_1.formatJoin(data);
+                this.channelManager.setAsConnected(channel);
+                this.emit('join', channel);
+                break;
+            case 'PING':
+                this.ping();
                 break;
             default:
                 console.log(`No parse handler for event "${event}":\n --> ${JSON.stringify(data)}\n`);
@@ -87,30 +103,13 @@ class TwitchBot extends events_1.EventEmitter {
     sendCredentials() {
         this.client.write(`PASS ${this.options.oauth}`);
         this.client.write(`NICK ${this.options.username}`);
-        this.joinChannels();
         this.client.write('CAP REQ :twitch.tv/tags');
         this.client.write('CAP REQ :twitch.tv/membership');
         this.client.write('CAP REQ :twitch.tv/commands');
+        this.channelManager.joinAll();
     }
-    joinChannels() {
-        for (const channel of this.options.channels) {
-            this.join(channel);
-        }
+    ping() {
+        this.client.write('PONG :tmi.twitch.tv');
     }
-    join(channelName) {
-        this.client.write(`JOIN ${channelName}`);
-    }
-}
-function argError(message) {
-    throw new Error(message);
-}
-function getEvent(data) {
-    const isCommand = /(?<=tmi.twitch.tv|jtv) ([0-9]|[A-Z])\w+/;
-    const matches = data.match(isCommand);
-    const match = matches[0].trim();
-    if (!isNaN(match)) {
-        return +match;
-    }
-    return match;
 }
 module.exports = TwitchBot;

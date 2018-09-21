@@ -7,6 +7,8 @@ export default class IRC {
   private readonly host: string
   private readonly port: number
   private socket: Socket
+  private lastChunk: Chunk | undefined
+  private listenForChunk: boolean = false
 
   constructor(host: string, port: number) {
     this.host = host
@@ -25,22 +27,37 @@ export default class IRC {
     })
   }
 
-  public write(message: string): void {
-    this.socket.write(`${message}\r\n`)
+  public write(message: string, callback?: () => void): void {
+    this.socket.write(`${message}\r\n`, callback)
+  }
+
+  public writeWithResponse(message: string): Promise<Chunk> {
+    return new Promise(resolve => {
+      this.write(message, () => {
+        this.listenForChunk = true
+        const checkForNewChunk = setInterval(() => {
+          if (!this.listenForChunk) {
+            clearInterval(checkForNewChunk)
+            resolve(this.lastChunk)
+          }
+        }, 10)
+      })
+    })
   }
 
   public listen(callback: (data: Chunk) => void): void {
     this.socket.on('data', (chunk: Chunk) => {
-      const lines = chunk.split('\n:')
+      // console.log(chunk)
+      const lines = chunk.split('\r\n')
+      console.log(lines)
+
       for (const line of lines) {
+        if (this.listenForChunk) {
+          this.lastChunk = line
+          this.listenForChunk = false
+        }
         callback(line)
       }
-    })
-  }
-
-  public once(callback: (data: Chunk) => void): void {
-    this.socket.once('data', (chunk: Chunk) => {
-      callback(chunk)
     })
   }
 }

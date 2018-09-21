@@ -1,3 +1,4 @@
+import { Chunk, Channel } from './types';
 export interface PrivMsg {
     badges?: Badges;
     bits?: number;
@@ -25,4 +26,5 @@ export interface Badges {
     turbo?: number;
     premium?: number;
 }
-export declare function formatPrivMsg(chunk: string): PrivMsg;
+export declare function formatPrivMsg(chunk: Chunk): PrivMsg;
+export declare function formatJoin(chunk: Chunk): Channel;

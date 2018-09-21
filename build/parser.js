@@ -45,6 +45,10 @@ function formatPrivMsg(chunk) {
     return message;
 }
 exports.formatPrivMsg = formatPrivMsg;
+function formatJoin(chunk) {
+    return chunk.split(`JOIN `)[1].trim();
+}
+exports.formatJoin = formatJoin;
 function formatBadges(badgeTags) {
     const badges = badgeTags.split(',');
     const formattedBadges = {};

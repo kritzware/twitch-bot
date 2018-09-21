@@ -5,16 +5,15 @@ import { Options, SayOptions } from './interfaces';
 declare class TwitchBot extends EventEmitter {
     private options;
     private client;
-    private lastChunk;
+    private channelManager;
     constructor(options: Options);
     connect(): Promise<void>;
     say(message: Message, options?: SayOptions): void;
-    setRoomMode(mode: RoomModerationCommand): void;
-    getModerators(): string[];
+    setRoomMode(mode: RoomModerationCommand, options?: SayOptions): void;
+    getModerators(): Promise<string[]>;
     private listen;
     private parse;
     private sendCredentials;
-    private joinChannels;
-    private join;
+    private ping;
 }
 export = TwitchBot;

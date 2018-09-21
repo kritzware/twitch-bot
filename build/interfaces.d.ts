@@ -7,5 +7,5 @@ export interface Options {
 }
 export interface SayOptions {
     channel?: Channel;
-    colored?: boolean;
+    coloured?: boolean;
 }
