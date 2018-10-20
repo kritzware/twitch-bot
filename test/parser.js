@@ -32,6 +32,14 @@ describe('parser', () => {
     })
   })
 
+  describe('formatWHISPER()', () => {
+    it('should format a WHISPER event', () => {
+      const event = samples.WHISPER.raw
+      const parsed = parser.formatWHISPER(event)
+      expect(parsed).to.eql(samples.WHISPER.expected)
+    })
+  })
+
   describe('formatCLEARCHAT()', () => {
     it('should format a CLEARCHAT timeout event', () => {
       const event = samples.CLEARCHAT.timeout_raw

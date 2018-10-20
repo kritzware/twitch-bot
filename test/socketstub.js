@@ -57,6 +57,16 @@ describe('emulated IO tests', function() {
 
   });
 
+  it ("should handle a whisper message", function(done) {
+
+    myBot.on('whisper', (chatter) => {
+      expect(chatter).to.eql(samples.WHISPER.expected)
+      done();
+    })
+    myBot.irc.emit("data",samples.WHISPER.raw)
+
+  });
+
   it ("should handle a subscription message", function(done) {
 
     myBot.on('subscription', (chatter) => {
