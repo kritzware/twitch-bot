@@ -39,7 +39,7 @@ module.exports = {
       user_id: 120412737,
       user_type: null,
       badges: { subscriber: 0, turbo: 1 },
-      channel: '#lirik',
+      channel: 'WHISPER_#lirik_l1nk3n_!l1nk3n_@l1nk3n_.tmi.twitch.tv ',
       message: 'lirikPRAY : PogChamp',
       username: 'l1nk3n_'
     },
