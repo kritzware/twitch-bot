@@ -2,12 +2,11 @@
   "name": "twitch-bot",
   "version": "2.0.0",
   "description": "Easily create chat bots for Twitch.tv",
-  "main": "index.js",
+  "main": "dist/bot.js",
   "scripts": {
-    "teststub": "mocha test/socketstub.js",
-    "ts": "tsc -w",
-    "test": "mocha --require ts-node/register test/**/*.spec.ts",
-    "lint": "prettier --config ./.prettierrc.js --write lib/**/*.ts"
+    "ts:watch": "tsc -w",
+    "ts:build": "tsc",
+    "test": "mocha --require ts-node/register test/**/*.ts --exit"
   },
   "repository": {
     "type": "git",
@@ -30,16 +29,15 @@
   "devDependencies": {
     "@types/chai": "^4.1.4",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.9.4",
+    "@types/node": "^10.12.18",
     "chai": "^4.1.0",
     "eslint": "^5.6.0",
-    "mocha": "^3.4.2",
+    "mocha": "^5.2.0",
     "prettier": "^1.14.3",
     "should": "^13.1.3",
     "sinon": "^4.1.3",
     "ts-node": "^7.0.1",
     "typedoc": "^0.12.0",
     "typescript": "^3.0.3"
-  },
-  "dependencies": {}
+  }
 }
