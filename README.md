@@ -35,6 +35,7 @@ Bot.on('message', chatter => {
 
 ## Index
 - [Events](https://github.com/kritzware/twitch-bot#events)
+  - [`connected`](https://github.com/kritzware/twitch-bot#connected---)
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
   - [`part`](https://github.com/kritzware/twitch-bot#part---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
@@ -53,6 +54,13 @@ Bot.on('message', chatter => {
 - [Tests](https://github.com/kritzware/twitch-bot#running-tests)
 
 ## Events
+### `connected - ()`
+This event is emitted when the bot has connected to the IRC server.
+#### Usage
+```javascript
+Bot.on('connected', () => ... )
+```
+
 ### `join - ()`
 This event is emitted when a channel has been joined successfully.
 #### Usage
