@@ -31,6 +31,12 @@ Bot.on('message', chatter => {
   }
 })
 
+Bot.on('whisper', chatter => {
+  if(chatter.message === '!test') {
+    Bot.say('Command executed! SecretPogChamp')
+  }
+})
+
 ```
 
 ## Index
@@ -39,6 +45,7 @@ Bot.on('message', chatter => {
   - [`join`](https://github.com/kritzware/twitch-bot#join---)
   - [`part`](https://github.com/kritzware/twitch-bot#part---)
   - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
+  - [`whisper`](https://github.com/kritzware/twitch-bot#whisper---chatter-object)
   - [`timeout`](https://github.com/kritzware/twitch-bot#timeout---event-object)
   - [`subscription`](https://github.com/kritzware/twitch-bot#subscription---event-object)
   - [`ban`](https://github.com/kritzware/twitch-bot#ban---event-object)
@@ -78,6 +85,10 @@ Bot.on('part', channel => ... )
 
 ### `message - (chatter: Object)`
 Emitted when a `PRIVSMSG` event is sent over IRC. Chatter object attributes can be found on the [Twitch developers site](https://dev.twitch.tv/docs/v5/guides/irc/#privmsg-twitch-tags)
+
+### `whisper - (chatter: Object)`
+Emitted when a `WHISPER` event is sent over IRC. Chatter object attributes can be found on the [Twitch developers site](https://dev.twitch.tv/docs/v5/guides/irc/#privmsg-twitch-tags)
+
 
 #### Usage
 ```javascript
